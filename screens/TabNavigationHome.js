@@ -33,6 +33,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // Screen
 import StackNavigationHome from './StackNavigationHome';
+import StackNavigationSetting from './StackNavigationSetting';
 import DetectScreen from './DetectScreen';
 import SettingScreen from './SettingScreen';
 
@@ -90,8 +91,8 @@ export default function TabNavigationHome({ navigation }) {
         }}
       />
       <Tab.Screen
-        name="Setting"
-        component={SettingScreen}
+        name="StackNavigationSetting"
+        component={StackNavigationSetting}
         options={{
           headerShown: false,
           tabBarLabel: 'Setting',

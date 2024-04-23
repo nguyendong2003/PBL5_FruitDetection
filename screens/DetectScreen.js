@@ -20,6 +20,7 @@ import {
 
 import {
   MaterialCommunityIcons,
+  MaterialIcons,
   FontAwesome,
   Ionicons,
   Feather,
@@ -91,8 +92,13 @@ export default function DetectScreen({ navigation, route }) {
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
-  const [camera, setCamera] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [type, setType] = useState(CameraType.back);
+
+  function toggleCameraType() {
+    setType((current) =>
+      current === CameraType.back ? CameraType.front : CameraType.back
+    );
+  }
 
   let takePicture = async () => {
     let options = {
@@ -132,6 +138,7 @@ export default function DetectScreen({ navigation, route }) {
                   alignItems: 'center',
                 },
               ]}
+              type={type}
               ref={cameraRef}
               ratio={'1:1'}
             >
@@ -143,6 +150,21 @@ export default function DetectScreen({ navigation, route }) {
                 onPress={takePicture}
               >
                 <Entypo name="camera" size={48} color="white" />
+              </Pressable>
+
+              <Pressable
+                style={{
+                  position: 'absolute',
+                  top: windowHeight - 150,
+                  left: windowWidth / 2 + 80,
+                }}
+                onPress={toggleCameraType}
+              >
+                <MaterialIcons
+                  name="flip-camera-android"
+                  size={48}
+                  color="white"
+                />
               </Pressable>
             </Camera>
           </View>
@@ -180,21 +202,15 @@ export default function DetectScreen({ navigation, route }) {
                 resizeMode="contain"
               />
             ) : (
-              // <Image
-              //   source={require('../assets/placeholder_photo.jpg')}
-              //   style={{ width: windowWidth, height: windowWidth }}
-              //   resizeMode="contain"
-              // />
-              // <Feather name="image" size={300} color="black" />
               <Ionicons name="image-outline" size={300} color="black" />
             )}
-            <Ionicons
+            {/* <Ionicons
               style={{ position: 'absolute', top: 10, left: 10 }}
               name="chevron-back-circle-sharp"
               size={48}
               color="#09B44C"
               onPress={() => navigation.goBack()}
-            />
+            /> */}
           </View>
           <View
             style={{
@@ -226,10 +242,7 @@ export default function DetectScreen({ navigation, route }) {
                 </Text>
               </Pressable>
 
-              <Pressable
-                style={{ alignItems: 'center' }}
-                onPress={() => openCamera()}
-              >
+              <Pressable style={{ alignItems: 'center' }} onPress={openCamera}>
                 <Feather name="camera" size={48} color="black" />
                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
                   Take photo
