@@ -23,9 +23,10 @@ import {
   FontAwesome,
   Ionicons,
   Feather,
+  Entypo,
 } from '@expo/vector-icons';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 // Upload image
 import * as ImagePicker from 'expo-image-picker';
 // Camera
@@ -37,11 +38,29 @@ export default function DetectScreen({ navigation, route }) {
   });
 
   useEffect(() => {
+    async function requestCameraPermission() {
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === 'granted');
+    }
+
+    requestCameraPermission();
+
     const subscription = Dimensions.addEventListener('change', ({ window }) => {
       setDimensions({ window });
     });
     return () => subscription?.remove();
-  });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Reset state when screen gets focused again
+      setPhoto(null);
+      setImage(null);
+      setShowCamera(false); // Assuming you want to hide camera when screen is focused again
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const { window } = dimensions;
   const windowWidth = window.width;
@@ -55,7 +74,7 @@ export default function DetectScreen({ navigation, route }) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       quality: 1,
     });
 
@@ -63,70 +82,75 @@ export default function DetectScreen({ navigation, route }) {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setPhoto(null);
     }
   };
 
   //Camera
-  const [cameraPermission, setCameraPermission] = useState(null);
+  const [photo, setPhoto] = useState(null);
+  let cameraRef = useRef();
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [showCamera, setShowCamera] = useState(false);
   const [camera, setCamera] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
 
-  const permisionFunction = async () => {
-    // here is how you can get the camera permission
-    const cameraPermission = await Camera.requestCameraPermissionsAsync();
+  let takePicture = async () => {
+    let options = {
+      quality: 1,
+      base64: true,
+      exif: false,
+    };
 
-    setCameraPermission(cameraPermission.status === 'granted');
-
-    // const imagePermission = await ImagePicker.getMediaLibraryPermissionsAsync();
-    // console.log(imagePermission.status);
-
-    // setGalleryPermission(imagePermission.status === 'granted');
-
-    // if (
-    //   imagePermission.status !== 'granted' &&
-    //   cameraPermission.status !== 'granted'
-    // ) {
-    //   alert('Permission for media access needed.');
-    // }
+    let newPhoto = await cameraRef.current.takePictureAsync(options);
+    setShowCamera(false);
+    setPhoto(newPhoto);
+    setImage(null);
   };
 
-  useEffect(() => {
-    permisionFunction();
-  }, []);
-
-  const takePicture = async () => {
-    if (camera) {
-      const data = await camera.takePictureAsync(null);
-      console.log(data.uri);
-      setImage(data.uri);
-    }
+  let openCamera = async () => {
+    // const cameraPermission = await Camera.requestCameraPermissionsAsync();
+    // setHasCameraPermission(cameraPermission.status === 'granted');
+    setShowCamera(true);
   };
-  // const [type, setType] = useState(CameraType.back);
-  // const [permission, requestPermission] = Camera.useCameraPermissions();
-
-  // if (!permission) {
-  //   // Camera permissions are still loading
-  //   return <View />;
-  // }
-
-  // if (!permission.granted) {
-  //   // Camera permissions are not granted yet
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={{ textAlign: 'center' }}>
-  //         We need your permission to show the camera
-  //       </Text>
-  //       <Button onPress={requestPermission} title="grant permission" />
-  //     </View>
-  //   );
-  // }
-
-  // function toggleCameraType() {
-  //   setType((current) =>
-  //     current === CameraType.back ? CameraType.front : CameraType.back
-  //   );
-  // }
-  //
+  if (showCamera) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior="padding"
+        >
+          <View style={{ width: windowWidth, height: windowHeight }}>
+            <Camera
+              // ref={(ref) => setCamera(ref)}
+              // style={styles.fixedRatio}
+              // type={type}
+              style={[
+                {
+                  width: windowWidth,
+                  height: windowHeight,
+                  alignItems: 'center',
+                },
+              ]}
+              ref={cameraRef}
+              ratio={'1:1'}
+            >
+              <Pressable
+                style={{
+                  position: 'absolute',
+                  top: windowHeight - 150,
+                }}
+                onPress={takePicture}
+              >
+                <Entypo name="camera" size={48} color="white" />
+              </Pressable>
+              <StatusBar style="auto" />
+            </Camera>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -142,33 +166,31 @@ export default function DetectScreen({ navigation, route }) {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled" // https://stackoverflow.com/questions/29685421/hide-keyboard-in-react-native
         >
-          <View style={styles.cameraContainer}>
-            <Camera
-              ref={(ref) => setCamera(ref)}
-              style={styles.fixedRatio}
-              type={type}
-              ratio={'1:1'}
-            />
-          </View>
           <View style={styles.topContainer}>
-            {image ? (
+            {photo ? (
+              <Image
+                // source={{ uri: image }}
+                source={{ uri: 'data:image/jpg;base64,' + photo.base64 }}
+                style={{ width: windowWidth, height: windowWidth }}
+                resizeMode="contain"
+              />
+            ) : image ? (
               <Image
                 source={{ uri: image }}
-                style={{ width: windowWidth, height: 300 }}
+                style={{ width: windowWidth, height: windowWidth }}
                 resizeMode="contain"
               />
             ) : (
-              <Image
-                source={require('../assets/placeholder_photo.jpg')}
-                style={{ width: windowWidth, height: 300 }}
-              />
+              // <Image
+              //   source={require('../assets/placeholder_photo.jpg')}
+              //   style={{ width: windowWidth, height: windowWidth }}
+              //   resizeMode="contain"
+              // />
+              // <Feather name="image" size={300} color="black" />
+              <Ionicons name="image-outline" size={300} color="black" />
             )}
-            {/* <Image
-              source={require('../assets/placeholder_photo.jpg')}
-              style={{ width: windowWidth, height: 300 }}
-            /> */}
             <Ionicons
-              style={{ position: 'absolute', top: -10, left: -10 }}
+              style={{ position: 'absolute', top: 10, left: 10 }}
               name="chevron-back-circle-sharp"
               size={48}
               color="#09B44C"
@@ -205,7 +227,10 @@ export default function DetectScreen({ navigation, route }) {
                 </Text>
               </Pressable>
 
-              <Pressable style={{ alignItems: 'center' }} onPress={takePicture}>
+              <Pressable
+                style={{ alignItems: 'center' }}
+                onPress={() => openCamera()}
+              >
                 <Feather name="camera" size={48} color="black" />
                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
                   Take photo
@@ -224,15 +249,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',
-    padding: 16,
+    // padding: 16,
   },
   topContainer: {
     width: '100%',
     alignItems: 'center',
+    // backgroundColor: 'red',
   },
   //
   card: {
@@ -269,12 +295,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   // camera
-  cameraContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  fixedRatio: {
-    flex: 1,
-    aspectRatio: 1,
+  buttonContainer: {
+    backgroundColor: '#fff',
+    // alignSelf: 'flex-end',
   },
 });

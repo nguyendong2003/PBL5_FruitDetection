@@ -13,7 +13,7 @@ export default function PrevHomeScreen({ navigation }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.navigate('Login');
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [navigation]);

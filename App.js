@@ -47,18 +47,6 @@ export default function App() {
           component={TabNavigationHome}
           options={{ headerShown: false }}
         />
-
-        {/* <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-
-        <Stack.Screen
-          name="FruitDetail"
-          component={FruitDetailScreen}
-          options={{ headerShown: false }}
-        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
