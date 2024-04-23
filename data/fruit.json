@@ -1,0 +1,183 @@
+[
+    {
+        "id": 1,
+        "name": "Apple",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/265px-Red_Apple.jpg",
+        "origin": "China, India",
+        "nutrition": "Vitamin C, Kali, Canxi, Glucozo",
+        "benefit": "Apples are rich in antioxidants and dietary fiber. They may help reduce the risk of chronic diseases like heart disease, diabetes, and cancer.",
+        "processing": "Apples can be eaten raw, juiced, or cooked into various dishes like pies, sauces, and salads. They can also be dried or turned into apple cider or vinegar.",
+        "description": "Apples are one of the most popular fruits worldwide, known for their crisp texture and sweet or tart flavors. They come in various colors, including red, green, and yellow, and are commonly consumed fresh or used in cooking and baking."
+    },
+    {
+        "id": 2,
+        "name": "Banana",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Bananas_white_background_DS.jpg/320px-Bananas_white_background_DS.jpg",
+        "origin": "Tropical regions",
+        "benefit": "Bananas are a good source of potassium, which is important for heart health and blood pressure regulation. They also contain vitamin C and vitamin B6.",
+        "processing": "Bananas are often eaten raw, but they can also be used in baking, smoothies, and desserts. They can be dried and turned into banana chips or mashed and used as a natural sweetener.",
+        "description": "Bananas are elongated, curved fruits with a soft, creamy flesh inside. They are usually yellow when ripe but can also be green or even red or purple. Bananas are one of the most popular fruits worldwide."
+    },
+    {
+        "id": 3,
+        "name": "Grapes",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Table_grapes_on_white.jpg/320px-Table_grapes_on_white.jpg",
+        "origin": "Europe, Asia",
+        "benefit": "Grapes contain antioxidants like resveratrol, which may have heart health benefits. They are also high in vitamins C and K and minerals like potassium and copper.",
+        "processing": "Grapes can be eaten fresh or dried as raisins. They are used in making wine, juices, jams, and jellies. Grape juice can also be fermented to make vinegar.",
+        "description": "Grapes grow in clusters on vines and come in various colors, including green, red, purple, and black. They have a sweet and juicy flavor and are commonly enjoyed as a snack or used in cooking and winemaking."
+    },
+    {
+        "id": 4,
+        "name": "Pineapple",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Pineapple_and_cross_section.jpg/286px-Pineapple_and_cross_section.jpg",
+        "origin": "South America",
+        "benefit": "Pineapples contain bromelain, an enzyme with anti-inflammatory properties. They are also rich in vitamin C and manganese.",
+        "processing": "Pineapples can be eaten fresh, juiced, or grilled. They are used in fruit salads, smoothies, desserts, and savory dishes like Hawaiian pizza.",
+        "description": "Pineapples have a tropical flavor with a combination of sweet and tart notes. They have a spiky, rough exterior and a juicy, yellow interior. Pineapples are commonly associated with tropical regions and are a symbol of hospitality."
+    },
+    {
+        "id": 5,
+        "name": "Orange",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Orange-Whole-%26-Split.jpg/320px-Orange-Whole-%26-Split.jpg",
+        "origin": "Asia",
+        "benefit": "Oranges are high in vitamin C, which supports immune function and may reduce the risk of chronic diseases. They also contain fiber and various antioxidants.",
+        "processing": "Oranges are typically eaten fresh or juiced. They can also be used in cooking and baking, and their zest is used to flavor dishes. Orange peel can be dried and used in teas or as a flavoring agent.",
+        "description": "Oranges are citrus fruits with a round shape and bright orange skin. They have a sweet and tangy flavor and are often associated with breakfast or snack time. Oranges are commonly consumed fresh or in the form of juice."
+    },
+    {
+        "id": 6,
+        "name": "Strawberry",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/PerfectStrawberry.jpg/320px-PerfectStrawberry.jpg",
+        "origin": "North America, Europe",
+        "benefit": "Strawberries are rich in antioxidants and vitamin C. They may have benefits for heart health, blood sugar control, and cancer prevention. They are also low in calories and high in fiber.",
+        "processing": "Strawberries are typically eaten fresh or used in desserts like cakes, pies, and ice cream. They can also be blended into smoothies or made into jam.",
+        "description": "Strawberries are small, red fruits with a sweet and slightly tart flavor. They have a juicy texture and are covered in small seeds. Strawberries are often enjoyed fresh in salads, desserts, or as a snack."
+    },
+    {
+        "id": 7,
+        "name": "Mango",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Mango_-_single.jpg/800px-Mango_-_single.jpg?20220129181209",
+        "origin": "South Asia",
+        "benefit": "Mangoes are rich in vitamins A and C, as well as antioxidants like beta-carotene and flavonoids. They may have benefits for eye health, immune function, and skin health.",
+        "processing": "Mangoes can be eaten fresh, sliced, or blended into smoothies. They are also used in cooking and baking, as well as in making juices, jams, and chutneys.",
+        "description": "Mangoes are tropical fruits with a sweet and creamy flesh. They have a distinctive aroma and come in various shapes and sizes, depending on the variety. Mangoes are commonly enjoyed fresh or used in desserts, salads, and savory dishes."
+    },
+    {
+        "id": 8,
+        "name": "Watermelon",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Watermelon_-_OpenClipart.svg/1200px-Watermelon_-_OpenClipart.svg.png",
+        "origin": "Africa",
+        "benefit": "Watermelons are high in water content and low in calories. They are a good source of vitamins A and C and contain antioxidants like lycopene, which may have benefits for heart health.",
+        "processing": "Watermelons are typically eaten fresh, sliced, or diced. They can also be blended into juices or used in salads, desserts, and beverages.",
+        "description": "Watermelons are large, round fruits with a thick rind and juicy, red or pink flesh. They have a sweet and refreshing taste, making them a popular choice for hydration during hot weather. Watermelons are often enjoyed at picnics, parties, and barbecues."
+    },
+    {
+        "id": 9,
+        "name": "Blueberry",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Blueberries_.jpg",
+        "origin": "North America",
+        "benefit": "Blueberries are high in antioxidants, particularly anthocyanins, which may have benefits for brain health, heart health, and blood sugar control. They are also low in calories and high in fiber.",
+        "processing": "Blueberries are typically eaten fresh or used in baking, desserts, smoothies, and jams. They can also be dried or frozen for longer storage.",
+        "description": "Blueberries are small, round berries with a deep blue or purple color. They have a sweet and slightly tart flavor and are often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 10,
+        "name": "Avocado",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/5/50/Avocado_open.jpg",
+        "origin": "Central America",
+        "benefit": "Avocados are high in healthy fats, particularly monounsaturated fats, which may have benefits for heart health. They also contain fiber, vitamins, and minerals like potassium and vitamin K.",
+        "processing": "Avocados are typically eaten fresh, sliced, or mashed. They are used in salads, sandwiches, wraps, and dips like guacamole.",
+        "description": "Avocados are pear-shaped fruits with a green or black skin and a creamy, yellow-green flesh. They have a rich, buttery flavor and are often enjoyed in savory dishes or as a spread on toast or crackers."
+    },
+    {
+        "id": 11,
+        "name": "Kiwi",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL2_hSSgOLxL6WK8d_CYIM6RowQPTLLGj4IKMcMZd-lw&s",
+        "origin": "China",
+        "benefit": "Kiwi is high in vitamin C and dietary fiber. It also contains antioxidants like vitamin E and polyphenols, which may have benefits for immune function and heart health.",
+        "processing": "Kiwi can be eaten fresh, sliced, or blended into smoothies. It is also used in salads, desserts, and savory dishes.",
+        "description": "Kiwi is a small, oval fruit with brown, fuzzy skin and bright green flesh with black seeds. It has a sweet and tangy flavor and is often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 12,
+        "name": "Cherry",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Cherry_Stella444.jpg/320px-Cherry_Stella444.jpg",
+        "origin": "Europe, Asia",
+        "benefit": "Cherries are high in antioxidants, particularly anthocyanins and vitamin C. They may have benefits for inflammation, exercise recovery, and sleep.",
+        "processing": "Cherries are typically eaten fresh or used in baking, desserts, jams, and sauces. They can also be dried or frozen for longer storage.",
+        "description": "Cherries are small, round fruits with a smooth skin and a single large seed inside. They come in various colors, including red, black, and yellow, and have a sweet and tart flavor. Cherries are often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 13,
+        "name": "Peach",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Cross_sections_of_peach.jpg/1200px-Cross_sections_of_peach.jpg",
+        "origin": "China",
+        "benefit": "Peaches are high in vitamins A and C and contain antioxidants like beta-carotene and lutein. They may have benefits for eye health, skin health, and immune function.",
+        "processing": "Peaches are typically eaten fresh or used in baking, desserts, jams, and sauces. They can also be grilled or poached.",
+        "description": "Peaches are round, fuzzy fruits with a juicy, sweet flesh inside. They have a fragrant aroma and come in various colors, including yellow, white, and red. Peaches are often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 14,
+        "name": "Pear",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmzi70hEvPR1xzjWCp-8C-uhikxockBf4LqMHZRju38w&s",
+        "origin": "China",
+        "benefit": "Pears are high in dietary fiber and contain vitamins C and K, as well as antioxidants like quercetin and kaempferol. They may have benefits for heart health, digestion, and weight management.",
+        "processing": "Pears are typically eaten fresh or used in baking, desserts, salads, and preserves. They can also be poached or grilled.",
+        "description": "Pears are pear-shaped fruits with a thin skin and a juicy, sweet flesh inside. They come in various colors, including green, yellow, and red, and have a mild, slightly grainy texture. Pears are often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 15,
+        "name": "Raspberry",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Raspberry_-_whole_%28Rubus_idaeus%29.jpg/2560px-Raspberry_-_whole_%28Rubus_idaeus%29.jpg",
+        "origin": "Europe, Asia",
+        "benefit": "Raspberries are high in antioxidants, particularly ellagic acid, quercetin, and anthocyanins. They may have benefits for heart health, blood sugar control, and inflammation.",
+        "processing": "Raspberries are typically eaten fresh or used in baking, desserts, jams, and sauces. They can also be frozen for longer storage.",
+        "description": "Raspberries are small, round berries with a bright red color and a sweet, tangy flavor. They have a delicate texture and are covered in tiny seeds. Raspberries are often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 16,
+        "name": "Cranberry",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Cranberries.jpg",
+        "origin": "North America",
+        "benefit": "Cranberries are high in antioxidants, particularly proanthocyanidins, which may have benefits for urinary tract health and heart health. They are also low in calories and contain vitamin C and fiber.",
+        "processing": "Cranberries are typically eaten dried or used in juices, sauces, jams, and baked goods. They can also be added to salads or used as a garnish.",
+        "description": "Cranberries are small, round berries with a bright red color and a tart flavor. They grow in bogs or marshes and are often harvested in the fall. Cranberries are commonly consumed in juice form or used in cooking and baking."
+    },
+    {
+        "id": 17,
+        "name": "Blackberry",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeNcPOeUXXs94GNocw_g_sUTJXe20ff8ln657o_AwL8w&s",
+        "origin": "Europe, Asia",
+        "benefit": "Blackberries are high in vitamins C and K, as well as fiber and antioxidants like anthocyanins and ellagic acid. They may have benefits for heart health, brain health, and blood sugar control.",
+        "processing": "Blackberries are typically eaten fresh or used in baking, desserts, jams, and sauces. They can also be frozen for longer storage.",
+        "description": "Blackberries are small, dark purple berries with a sweet and slightly tart flavor. They have a juicy texture and are covered in tiny seeds. Blackberries are often enjoyed fresh or used in cooking and baking."
+    },
+    {
+        "id": 18,
+        "name": "Apricot",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apricot_and_cross_section.jpg/800px-Apricot_and_cross_section.jpg",
+        "origin": "China",
+        "benefit": "Apricots are high in vitamins A and C and contain antioxidants like beta-carotene and lutein. They may have benefits for eye health, skin health, and immune function.",
+        "processing": "Apricots are typically eaten fresh or dried. They can also be used in baking, desserts, jams, and sauces.",
+        "description": "Apricots are small, round fruits with a smooth, orange skin and a soft, juicy flesh inside. They have a sweet and slightly tart flavor and are often enjoyed fresh or dried."
+    },
+    {
+        "id": 19,
+        "name": "Pomegranate",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Pomegranate.jpg/1280px-Pomegranate.jpg",
+        "origin": "Iran, Mediterranean region",
+        "benefit": "Pomegranates are high in antioxidants, particularly punicalagins and anthocyanins, which may have benefits for heart health, cancer prevention, and inflammation. They are also high in vitamins C and K.",
+        "processing": "Pomegranates are typically eaten fresh, and their seeds can be added to salads, yogurt, or desserts. Pomegranate juice is also popular and can be used in cooking and baking.",
+        "description": "Pomegranates are round fruits with a thick, leathery skin and a crown-shaped calyx at the top. They have a juicy, red or pink pulp inside, filled with edible seeds. Pomegranates have a sweet and tangy flavor and are often associated with health and fertility."
+    },
+    {
+        "id": 20,
+        "name": "Plum",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Shiny_plum.jpg",
+        "origin": "China, Europe",
+        "benefit": "Plums are high in vitamins C and K, as well as antioxidants like beta-carotene and anthocyanins. They may have benefits for heart health, digestion, and bone health.",
+        "processing": "Plums are typically eaten fresh or dried. They can also be used in baking, desserts, jams, and sauces.",
+        "description": "Plums are small, round fruits with smooth skin and a juicy, sweet flesh inside. They come in various colors, including red, purple, yellow, and green, and have a slightly tart flavor. Plums are often enjoyed fresh or dried."
+    }
+]

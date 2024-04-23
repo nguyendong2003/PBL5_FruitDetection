@@ -1,12 +1,66 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+// screen
+import PrevHomeScreen from './screens/PrevHomeScreen';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import TabNavigationHome from './screens/TabNavigationHome';
+// import HomeScreen from './screens/HomeScreen';
+// import FruitDetailScreen from './screens/FruitDetailScreen';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="PrevHome">
+        <Stack.Screen
+          name="PrevHome"
+          component={PrevHomeScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="TabNavigationHome"
+          component={TabNavigationHome}
+          options={{ headerShown: false }}
+        />
+
+        {/* <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="FruitDetail"
+          component={FruitDetailScreen}
+          options={{ headerShown: false }}
+        /> */}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

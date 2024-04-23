@@ -3,7 +3,7 @@
     "name": "PBL5_Mobile",
     "slug": "PBL5_Mobile",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
