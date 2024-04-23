@@ -18,7 +18,13 @@ import {
 } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome, Ionicons, Entypo, Feather } from '@expo/vector-icons';
+import {
+  FontAwesome,
+  Ionicons,
+  Entypo,
+  Feather,
+  AntDesign,
+} from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
 
@@ -76,7 +82,7 @@ export default function TabNavigationHome({ navigation }) {
         options={{
           headerShown: false,
           tabBarLabel: 'Dectect',
-          tabBarIcon: () => <Feather name="camera" size={24} color="black" />,
+          tabBarIcon: () => <AntDesign name="scan1" size={24} color="black" />,
           tabBarLabelStyle: {
             fontSize: 14,
             fontWeight: 'bold',
@@ -105,7 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight + 16,
+    // paddingTop: StatusBar.currentHeight + 16,
   },
   scrollContainer: {
     flexGrow: 1,

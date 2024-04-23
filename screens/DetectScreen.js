@@ -127,8 +127,8 @@ export default function DetectScreen({ navigation, route }) {
               // type={type}
               style={[
                 {
-                  width: windowWidth,
-                  height: windowHeight,
+                  width: '100%',
+                  height: '100%',
                   alignItems: 'center',
                 },
               ]}
@@ -144,7 +144,6 @@ export default function DetectScreen({ navigation, route }) {
               >
                 <Entypo name="camera" size={48} color="white" />
               </Pressable>
-              <StatusBar style="auto" />
             </Camera>
           </View>
         </KeyboardAvoidingView>
@@ -161,7 +160,7 @@ export default function DetectScreen({ navigation, route }) {
         <ScrollView
           contentContainerStyle={[
             styles.scrollContainer,
-            { width: windowWidth },
+            { width: windowWidth, minHeight: windowHeight },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled" // https://stackoverflow.com/questions/29685421/hide-keyboard-in-react-native
@@ -249,7 +248,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    // paddingTop: StatusBar.currentHeight,
+    paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',
@@ -261,25 +260,6 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
   },
   //
-  card: {
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    margin: 4,
-  },
-  cardText: {
-    marginTop: 8,
-    fontSize: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  //
-  inputSearch: {
-    marginLeft: 8,
-    fontSize: 22,
-    width: '90%',
-  },
   button: {
     width: '50%',
     backgroundColor: '#09B44C',
@@ -295,8 +275,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   // camera
-  buttonContainer: {
-    backgroundColor: '#fff',
-    // alignSelf: 'flex-end',
-  },
 });

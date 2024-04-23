@@ -15,8 +15,6 @@ import PrevHomeScreen from './screens/PrevHomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import TabNavigationHome from './screens/TabNavigationHome';
-// import HomeScreen from './screens/HomeScreen';
-// import FruitDetailScreen from './screens/FruitDetailScreen';
 
 const Stack = createStackNavigator();
 
