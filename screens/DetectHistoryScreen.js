@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react';
 // fruit.json
 import fruitList from '../data/fruit.json';
 
-export default function HomeScreen({ navigation }) {
+export default function DetectHistoryScreen({ navigation }) {
   const [search, setSearch] = useState('');
 
   const [dimensions, setDimensions] = useState({
@@ -80,9 +80,9 @@ export default function HomeScreen({ navigation }) {
 
             <Pressable onPress={() => alert('Profile clicked')}>
               {/* <MaterialCommunityIcons
-                name={'account-circle-outline'}
-                size={40}
-              /> */}
+                  name={'account-circle-outline'}
+                  size={40}
+                /> */}
               <Image
                 source={require('../assets/41.jpg')}
                 style={{

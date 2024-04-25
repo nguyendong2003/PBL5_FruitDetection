@@ -13,62 +13,91 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  Dimensions,
 } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
 
-export default function RegisterScreen({ navigation }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+export default function ChangePasswordScreen({ navigation }) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+
   const [errors, setErrors] = useState({});
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [dimensions, setDimensions] = useState({
+    window: Dimensions.get('window'),
+  });
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setDimensions({ window });
+    });
+    return () => subscription?.remove();
+  });
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setUsername('');
-      setPassword('');
-      setConfirmPassword('');
-      setShowPassword(false);
-      setShowConfirmPassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmNewPassword(false);
       setErrors({});
     });
 
     return unsubscribe;
   }, [navigation]);
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
+
+  const { window } = dimensions;
+  const windowWidth = window.width;
+  const windowHeight = window.height;
+
+  // console.log({ windowWidth, windowHeight });
+
+  const toggleShowCurrentPassword = () => {
+    setShowCurrentPassword(!showCurrentPassword);
   };
 
-  const toggleShowConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
+  const toggleShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
   };
 
-  const handleRegister = () => {
+  const toggleShowConfirmNewPassword = () => {
+    setShowConfirmNewPassword(!showConfirmNewPassword);
+  };
+
+  const handleChangePassword = () => {
     let newErrors = {};
 
-    // Kiểm tra username
-    if (!username) {
-      newErrors['usernameError'] = 'Username cannot be empty';
+    if (!currentPassword) {
+      newErrors['currentPassword'] = 'Current password cannot be empty';
     }
 
-    // Kiểm tra mật khẩu
-    if (!password) {
-      newErrors['passwordEmptyError'] = 'Password cannot be empty';
+    if (!newPassword) {
+      newErrors['newPasswordEmptyError'] = 'New password cannot be empty';
     }
-    if (!confirmPassword) {
-      newErrors['confirmPasswordEmptyError'] =
-        'Confirm Password cannot be empty';
+
+    if (!confirmNewPassword) {
+      newErrors['confirmNewPasswordEmptyError'] =
+        'Confirm new password cannot be empty';
     }
-    if (password && confirmPassword && password !== confirmPassword) {
+
+    if (
+      newPassword &&
+      confirmNewPassword &&
+      newPassword !== confirmNewPassword
+    ) {
       newErrors['passwordMismatchError'] =
-        'Password and Confirm Password do not match';
+        'New password and Confirm new password do not match';
     }
 
     // Nếu có lỗi, hiển thị chúng
@@ -77,10 +106,8 @@ export default function RegisterScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
-      alert('Register successfully');
+      alert('Change password successfully');
       navigation.navigate('Login');
-      // Your registration logic here
-      // For example: navigation.navigate('Home');
     }
   };
 
@@ -91,100 +118,104 @@ export default function RegisterScreen({ navigation }) {
         // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         behavior="padding"
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
+        <View
+          style={styles.scrollContainer}
           keyboardShouldPersistTaps="handled" // https://stackoverflow.com/questions/29685421/hide-keyboard-in-react-native
         >
-          <Image
-            source={require('../assets/image-home-fruit.png')}
-            style={styles.imageFruit}
-            alt="Anh trai cay"
-          />
           <View style={styles.form}>
-            <Text style={styles.textTitle}>Create an account</Text>
-
-            <Text style={styles.labelForm}>Username</Text>
-            <TextInput
-              style={styles.inputUsername}
-              value={username}
-              //   onChangeText={setUsername}
-              onChangeText={(text) => {
-                setUsername(text);
-                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['usernameError']) {
-                  setErrors({ ...errors, usernameError: null });
-                }
-              }}
-              placeholder="Enter your username"
-            />
-            {errors['usernameError'] ? (
-              <Text style={styles.errorText}>{errors['usernameError']}</Text>
-            ) : null}
-
-            <Text style={styles.labelForm}>Password</Text>
+            {/* <Text style={styles.textTitle}>Login</Text> */}
+            <Text style={styles.labelForm}>Current Password</Text>
             <View style={[styles.passwordContainer]}>
               <TextInput
-                style={styles.inputPassword}
-                secureTextEntry={!showPassword}
-                value={password}
-                // onChangeText={setPassword}
+                style={styles.inputNewPassword}
+                value={currentPassword}
+                secureTextEntry={!showCurrentPassword}
+                //   onChangeText={setUsername}
                 onChangeText={(text) => {
-                  setPassword(text);
+                  setCurrentPassword(text);
                   // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                  if (errors['passwordEmptyError']) {
-                    setErrors({ ...errors, passwordEmptyError: null });
+                  if (errors['currentPassword']) {
+                    setErrors({ ...errors, currentPassword: null });
                   }
                 }}
-                placeholder="Enter your password"
+                placeholder="Enter your current password"
               />
               <MaterialCommunityIcons
-                name={showPassword ? 'eye-off' : 'eye'}
+                name={showCurrentPassword ? 'eye-off' : 'eye'}
                 size={24}
                 color="#aaa"
                 style={styles.icon}
-                onPress={toggleShowPassword}
+                onPress={toggleShowCurrentPassword}
               />
             </View>
 
-            {errors['passwordEmptyError'] ? (
+            {errors['currentPassword'] ? (
+              <Text style={styles.errorText}>{errors['currentPassword']}</Text>
+            ) : null}
+
+            <Text style={styles.labelForm}>New Password</Text>
+            <View style={[styles.passwordContainer]}>
+              <TextInput
+                style={styles.inputNewPassword}
+                secureTextEntry={!showNewPassword}
+                value={newPassword}
+                onChangeText={(text) => {
+                  setNewPassword(text);
+                  // Xóa thông báo lỗi khi người dùng thay đổi nội dung
+                  if (errors['newPasswordEmptyError']) {
+                    setErrors({ ...errors, newPasswordEmptyError: null });
+                  }
+                }}
+                placeholder="Enter your new password"
+              />
+              <MaterialCommunityIcons
+                name={showNewPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#aaa"
+                style={styles.icon}
+                onPress={toggleShowNewPassword}
+              />
+            </View>
+
+            {errors['newPasswordEmptyError'] ? (
               <Text style={styles.errorText}>
-                {errors['passwordEmptyError']}
+                {errors['newPasswordEmptyError']}
               </Text>
             ) : null}
 
-            <Text style={styles.labelForm}>Confirm password</Text>
+            <Text style={styles.labelForm}>Confirm new password</Text>
             <View style={[styles.passwordContainer]}>
               <TextInput
-                style={styles.inputPassword}
-                secureTextEntry={!showConfirmPassword}
-                value={confirmPassword}
-                // onChangeText={setConfirmPassword}
+                style={styles.inputNewPassword}
+                secureTextEntry={!showConfirmNewPassword}
+                value={confirmNewPassword}
                 onChangeText={(text) => {
-                  setConfirmPassword(text);
-
+                  setConfirmNewPassword(text);
                   // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                  if (errors['confirmPasswordEmptyError']) {
-                    setErrors({ ...errors, confirmPasswordEmptyError: null });
+                  if (errors['confirmNewPasswordEmptyError']) {
+                    setErrors({
+                      ...errors,
+                      confirmNewPasswordEmptyError: null,
+                    });
                   }
                   if (errors['passwordMismatchError']) {
                     setErrors({ ...errors, passwordMismatchError: null });
                   }
                 }}
-                placeholder="Enter your confirm password"
+                placeholder="Enter your confirm new password"
               />
               <MaterialCommunityIcons
-                name={showConfirmPassword ? 'eye-off' : 'eye'}
+                name={showConfirmNewPassword ? 'eye-off' : 'eye'}
                 size={24}
                 color="#aaa"
                 style={styles.icon}
-                onPress={toggleShowConfirmPassword}
+                onPress={toggleShowConfirmNewPassword}
               />
             </View>
 
-            {errors['confirmPasswordEmptyError'] ? (
+            {errors['confirmNewPasswordEmptyError'] ? (
               <Text style={styles.errorText}>
-                {errors['confirmPasswordEmptyError']}
+                {errors['confirmNewPasswordEmptyError']}
               </Text>
             ) : null}
 
@@ -196,25 +227,12 @@ export default function RegisterScreen({ navigation }) {
 
             <Pressable
               style={styles.button}
-              onPress={() => {
-                // Keyboard.dismiss();
-                handleRegister();
-              }}
+              onPress={() => handleChangePassword()}
             >
-              <Text style={styles.buttonText}>Register Now</Text>
-            </Pressable>
-
-            <Pressable
-              style={{ marginTop: 16 }}
-              onPress={() => navigation.navigate('Login')}
-            >
-              <Text style={styles.createAccount}>
-                Already have any account yet?
-              </Text>
-              <Text style={styles.createAccount}>Login Now</Text>
+              <Text style={styles.buttonText}>Save</Text>
             </Pressable>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -266,7 +284,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
   },
-  inputUsername: {
+  inputCurrentPassword: {
     height: 40,
     borderColor: '#ddd',
     borderWidth: 1,
@@ -275,7 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-  inputPassword: {
+  inputNewPassword: {
     maxWidth: '90%',
   },
 

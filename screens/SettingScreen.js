@@ -16,6 +16,7 @@ import {
   Dimensions,
   FlatList,
   PermissionsAndroid,
+  ImageBackground,
 } from 'react-native';
 
 import {
@@ -69,7 +70,7 @@ export default function SettingScreen({ navigation, route }) {
                 alignItems: 'center',
               }}
             >
-              <View>
+              {/* <View>
                 <Ionicons
                   name="person-circle-outline"
                   size={200}
@@ -80,15 +81,28 @@ export default function SettingScreen({ navigation, route }) {
                 >
                   nhathung2207
                 </Text>
+              </View> */}
+              <View>
+                <Image
+                  source={require('../assets/41.jpg')}
+                  style={{
+                    height: 200,
+                    width: 200,
+                    margin: 10,
+                    borderRadius: 100,
+                  }}
+                />
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    color: 'white',
+                    fontSize: 24,
+                  }}
+                >
+                  nhathung2207
+                </Text>
               </View>
             </View>
-            {/* <Ionicons
-              style={{ position: 'absolute', top: 30, left: 20 }}
-              name="chevron-back-circle-sharp"
-              size={48}
-              color="white"
-              onPress={() => navigation.goBack()}
-            /> */}
           </View>
           <View
             style={{
@@ -104,7 +118,7 @@ export default function SettingScreen({ navigation, route }) {
                 style={{ flex: 1 }}
                 name="person"
                 size={24}
-                color="black"
+                color="#ffc107"
               />
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Personal Information
@@ -113,9 +127,14 @@ export default function SettingScreen({ navigation, route }) {
 
             <Pressable
               style={styles.button}
-              onPress={() => alert('Personal button')}
+              onPress={() => navigation.navigate('ChangePassword')}
             >
-              <Entypo style={{ flex: 1 }} name="lock" size={24} color="black" />
+              <Entypo
+                style={{ flex: 1 }}
+                name="lock"
+                size={24}
+                color="#198754"
+              />
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Change password
               </Text>
@@ -123,13 +142,13 @@ export default function SettingScreen({ navigation, route }) {
 
             <Pressable
               style={styles.button}
-              onPress={() => alert('Personal button')}
+              onPress={() => navigation.navigate('DetectHistory')}
             >
               <FontAwesome
                 style={{ flex: 1 }}
                 name="history"
                 size={24}
-                color="black"
+                color="#0dcaf0"
               />
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Detection history
@@ -144,7 +163,7 @@ export default function SettingScreen({ navigation, route }) {
                 style={{ flex: 1 }}
                 name="favorite"
                 size={24}
-                color="black"
+                color="red"
               />
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Favourite fruits
@@ -153,13 +172,13 @@ export default function SettingScreen({ navigation, route }) {
 
             <Pressable
               style={styles.button}
-              onPress={() => alert('Personal button')}
+              onPress={() => navigation.navigate('Login')}
             >
               <Entypo
                 style={{ flex: 1 }}
                 name="log-out"
                 size={24}
-                color="black"
+                color="#dc3545"
               />
               <Text style={[styles.buttonText, { flex: 4 }]}>Log out</Text>
             </Pressable>

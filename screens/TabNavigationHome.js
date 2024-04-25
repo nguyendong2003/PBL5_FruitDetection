@@ -24,6 +24,7 @@ import {
   Entypo,
   Feather,
   AntDesign,
+  Fontisto,
 } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
@@ -62,6 +63,11 @@ export default function TabNavigationHome({ navigation }) {
       screenOptions={{
         tabBarLabelPosition: 'below-icon',
         tabBarShowLabel: true,
+
+        // tabBarActiveBackgroundColor: 'green', // đổi màu nền của tab item được click
+
+        // tabBarInactiveTintColor: "blue",     // đổi màu chữ của tab item không được click
+        // tabBarInactiveBackgroundColor: "purple", // đổi màu nền của tab item không được click
       }}
     >
       <Tab.Screen
@@ -70,11 +76,14 @@ export default function TabNavigationHome({ navigation }) {
         options={{
           headerShown: false,
           tabBarLabel: 'Home',
-          tabBarIcon: () => <Feather name="home" size={24} color="black" />,
+          tabBarIcon: ({ color }) => (
+            <Entypo name="home" size={24} color={color} />
+          ),
           tabBarLabelStyle: {
             fontSize: 14,
             fontWeight: 'bold',
           },
+          tabBarActiveTintColor: '#09B44C',
         }}
       />
       <Tab.Screen
@@ -82,12 +91,15 @@ export default function TabNavigationHome({ navigation }) {
         component={DetectScreen}
         options={{
           headerShown: false,
-          tabBarLabel: 'Dectect',
-          tabBarIcon: () => <AntDesign name="scan1" size={24} color="black" />,
+          tabBarLabel: 'Detect',
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="scan1" size={24} color={color} />
+          ),
           tabBarLabelStyle: {
             fontSize: 14,
             fontWeight: 'bold',
           },
+          tabBarActiveTintColor: '#09B44C',
         }}
       />
       <Tab.Screen
@@ -96,11 +108,14 @@ export default function TabNavigationHome({ navigation }) {
         options={{
           headerShown: false,
           tabBarLabel: 'Setting',
-          tabBarIcon: () => <Feather name="settings" size={24} color="black" />,
+          tabBarIcon: ({ color }) => (
+            <Fontisto name="player-settings" size={24} color={color} />
+          ),
           tabBarLabelStyle: {
             fontSize: 14,
             fontWeight: 'bold',
           },
+          tabBarActiveTintColor: '#09B44C',
         }}
       />
     </Tab.Navigator>

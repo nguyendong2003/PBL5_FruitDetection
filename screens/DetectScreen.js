@@ -215,7 +215,6 @@ export default function DetectScreen({ navigation, route }) {
           <View
             style={{
               marginTop: 20,
-              // backgroundColor: 'red',
               width: windowWidth - 32,
               alignItems: 'center',
             }}

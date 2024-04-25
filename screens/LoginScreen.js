@@ -37,6 +37,18 @@ export default function LoginScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Reset state when screen gets focused again
+      setUsername('');
+      setPassword('');
+      setShowPassword(false);
+      setErrors({});
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const { window } = dimensions;
   const windowWidth = window.width;
   const windowHeight = window.height;

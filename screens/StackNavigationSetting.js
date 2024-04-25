@@ -12,6 +12,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 // screen
 import SettingScreen from './SettingScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
+import DetectHistoryScreen from './DetectHistoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,11 +27,27 @@ export default function StackNavigationSetting() {
         options={{ headerShown: false }}
       />
 
-      {/* <Stack.Screen
-        name="FruitDetail"
-        component={FruitDetailScreen}
-        options={{ headerShown: false }}
-      /> */}
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
+      />
+
+      <Stack.Screen
+        name="DetectHistory"
+        component={DetectHistoryScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
+      />
     </Stack.Navigator>
     // </NavigationContainer>
   );
