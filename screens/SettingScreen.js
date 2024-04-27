@@ -31,12 +31,18 @@ import {
 } from '@expo/vector-icons';
 
 import { useState, useEffect, useRef } from 'react';
-// Upload image
-import * as ImagePicker from 'expo-image-picker';
-// Camera
-import { Camera, CameraType } from 'expo-camera';
+
+import { useAuth } from './AuthContext';
 
 export default function SettingScreen({ navigation, route }) {
+  //
+  const { currentUser, setUser } = useAuth();
+
+  const handleLogout = () => {
+    setUser(null);
+    navigation.navigate('Login');
+  };
+  //
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
@@ -84,7 +90,8 @@ export default function SettingScreen({ navigation, route }) {
               </View> */}
               <View>
                 <Image
-                  source={require('../assets/41.jpg')}
+                  // source={require('../assets/41.jpg')}
+                  source={{ uri: currentUser?.image }}
                   style={{
                     height: 200,
                     width: 200,
@@ -99,7 +106,8 @@ export default function SettingScreen({ navigation, route }) {
                     fontSize: 24,
                   }}
                 >
-                  nhathung2207
+                  {/* nhathung2207 */}
+                  {currentUser?.display_name}
                 </Text>
               </View>
             </View>
@@ -112,7 +120,7 @@ export default function SettingScreen({ navigation, route }) {
           >
             <Pressable
               style={styles.button}
-              onPress={() => alert('Personal button')}
+              onPress={() => navigation.navigate('PersonalInformation')}
             >
               <Fontisto
                 style={{ flex: 1 }}
@@ -157,7 +165,7 @@ export default function SettingScreen({ navigation, route }) {
 
             <Pressable
               style={styles.button}
-              onPress={() => alert('Personal button')}
+              onPress={() => navigation.navigate('FavouriteFruit')}
             >
               <MaterialIcons
                 style={{ flex: 1 }}
@@ -170,10 +178,7 @@ export default function SettingScreen({ navigation, route }) {
               </Text>
             </Pressable>
 
-            <Pressable
-              style={styles.button}
-              onPress={() => navigation.navigate('Login')}
-            >
+            <Pressable style={styles.button} onPress={handleLogout}>
               <Entypo
                 style={{ flex: 1 }}
                 name="log-out"
@@ -224,5 +229,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'left',
   },
-  // camera
 });

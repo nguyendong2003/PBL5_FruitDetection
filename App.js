@@ -10,6 +10,9 @@ import {
 import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
+import { AuthProvider } from './screens/AuthContext';
+
 // screen
 import PrevHomeScreen from './screens/PrevHomeScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -20,33 +23,35 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="PrevHome">
-        <Stack.Screen
-          name="PrevHome"
-          component={PrevHomeScreen}
-          options={{ headerShown: false }}
-        />
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="PrevHome">
+          <Stack.Screen
+            name="PrevHome"
+            component={PrevHomeScreen}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Register"
-          component={RegisterScreen}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="TabNavigationHome"
-          component={TabNavigationHome}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="TabNavigationHome"
+            component={TabNavigationHome}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 

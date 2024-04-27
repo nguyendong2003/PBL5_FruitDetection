@@ -14,6 +14,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from './HomeScreen';
 import FruitDetailScreen from './FruitDetailScreen';
+import PersonalInformationScreen from './PersonalInformationScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,18 @@ export default function StackNavigationHome() {
         name="FruitDetail"
         component={FruitDetailScreen}
         options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="PersonalInformation"
+        component={PersonalInformationScreen}
+        options={{
+          title: 'Personal information',
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
       />
     </Stack.Navigator>
     // </NavigationContainer>

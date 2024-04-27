@@ -21,12 +21,11 @@ import {
   MaterialCommunityIcons,
   FontAwesome,
   Ionicons,
-  AntDesign,
 } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
 //
-export default function FruitDetailScreen({ navigation, route }) {
+export default function DetectFruitDetailScreen({ navigation, route }) {
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
@@ -45,11 +44,7 @@ export default function FruitDetailScreen({ navigation, route }) {
   //
   const { fruit } = route.params;
 
-  //
-  const [isFavourite, setIsFavourite] = useState(fruit.favourite); // Trạng thái của trái tim
-  const toggleFavourite = () => {
-    setIsFavourite(!isFavourite); // Đảo ngược trạng thái khi nút được nhấn
-  };
+  // console.log({ windowWidth, windowHeight });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,24 +62,47 @@ export default function FruitDetailScreen({ navigation, route }) {
           keyboardShouldPersistTaps="handled" // https://stackoverflow.com/questions/29685421/hide-keyboard-in-react-native
         >
           <View style={styles.topContainer}>
+            <Text
+              style={{
+                color: '#09B44C',
+                padding: 16,
+                fontWeight: 'bold',
+                fontSize: 24,
+              }}
+            >
+              Input
+            </Text>
             <Image
               source={{
-                uri: fruit?.image,
+                uri: fruit?.image_input,
               }}
-              style={{ width: windowWidth, height: 300 }}
+              style={{ width: windowWidth, height: windowWidth }}
             />
-            <Ionicons
-              style={{ position: 'absolute', top: 10, left: 10 }}
-              name="chevron-back-circle-sharp"
-              size={48}
-              color="#09B44C"
-              onPress={() => navigation.goBack()}
+          </View>
+
+          <View style={styles.topContainer}>
+            <Text
+              style={{
+                color: '#09B44C',
+                padding: 16,
+                fontWeight: 'bold',
+                fontSize: 24,
+              }}
+            >
+              Output
+            </Text>
+            <Image
+              source={{
+                uri: fruit?.image_output,
+              }}
+              style={{ width: windowWidth, height: windowWidth }}
             />
           </View>
 
           <View
             style={[
               styles.detailContainer,
+              ,
               {
                 width: windowWidth,
                 minHeight: windowHeight - 300,
@@ -96,10 +114,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                 padding: 10,
                 borderBottomWidth: 2,
                 borderColor: '#D7D2D2',
-                flexDirection: 'row',
-                width: '100%',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <Text
@@ -110,16 +125,10 @@ export default function FruitDetailScreen({ navigation, route }) {
                   textAlign: 'left',
                 }}
               >
-                {fruit.name}
+                Detect result
               </Text>
-
-              <AntDesign
-                onPress={toggleFavourite}
-                name={isFavourite ? 'heart' : 'hearto'}
-                size={36}
-                color={isFavourite ? 'red' : '#09B44C'}
-              />
             </View>
+
             <View>
               <View
                 style={{
@@ -135,7 +144,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                     fontWeight: '600',
                   }}
                 >
-                  Origin:
+                  Image have:
                 </Text>
                 <Text
                   style={{
@@ -146,11 +155,11 @@ export default function FruitDetailScreen({ navigation, route }) {
                     textAlign: 'justify',
                   }}
                 >
-                  {fruit?.description}
+                  {fruit?.name}
                 </Text>
               </View>
 
-              <View
+              {/* <View
                 style={{
                   flexDirection: 'row',
                   padding: 12,
@@ -177,94 +186,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                 >
                   {fruit?.nutrition}
                 </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  padding: 12,
-                }}
-              >
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 16,
-                    color: '#09B44C',
-                    fontWeight: '600',
-                  }}
-                >
-                  Benefit:
-                </Text>
-                <Text
-                  style={{
-                    flex: 3,
-                    fontSize: 16,
-                    color: 'black',
-                    fontWeight: '600',
-                    textAlign: 'justify',
-                  }}
-                >
-                  {fruit?.benefit}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  padding: 12,
-                }}
-              >
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 16,
-                    color: '#09B44C',
-                    fontWeight: '600',
-                  }}
-                >
-                  Processing:
-                </Text>
-                <Text
-                  style={{
-                    flex: 3,
-                    fontSize: 16,
-                    color: 'black',
-                    fontWeight: '600',
-                    textAlign: 'justify',
-                  }}
-                >
-                  {fruit?.processing}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  padding: 12,
-                }}
-              >
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 16,
-                    color: '#09B44C',
-                    fontWeight: '600',
-                  }}
-                >
-                  Description:
-                </Text>
-                <Text
-                  style={{
-                    flex: 3,
-                    fontSize: 16,
-                    color: 'black',
-                    fontWeight: '600',
-                    textAlign: 'justify',
-                  }}
-                >
-                  {fruit?.description}
-                </Text>
-              </View>
+              </View> */}
             </View>
           </View>
         </ScrollView>
@@ -278,7 +200,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',
@@ -287,6 +209,7 @@ const styles = StyleSheet.create({
   topContainer: {
     width: '100%',
     alignItems: 'center',
+    backgroundColor: '#ffc273',
   },
   //
   card: {

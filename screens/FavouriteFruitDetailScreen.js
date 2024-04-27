@@ -26,7 +26,7 @@ import {
 
 import { useState, useEffect } from 'react';
 //
-export default function FruitDetailScreen({ navigation, route }) {
+export default function FavouriteFruitDetailScreen({ navigation, route }) {
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
@@ -72,13 +72,6 @@ export default function FruitDetailScreen({ navigation, route }) {
                 uri: fruit?.image,
               }}
               style={{ width: windowWidth, height: 300 }}
-            />
-            <Ionicons
-              style={{ position: 'absolute', top: 10, left: 10 }}
-              name="chevron-back-circle-sharp"
-              size={48}
-              color="#09B44C"
-              onPress={() => navigation.goBack()}
             />
           </View>
 
@@ -278,7 +271,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',

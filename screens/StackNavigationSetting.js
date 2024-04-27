@@ -14,10 +14,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import SettingScreen from './SettingScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
 import DetectHistoryScreen from './DetectHistoryScreen';
+import DetectFruitDetailScreen from './DetectFruitDetailScreen';
+import PersonalInformationScreen from './PersonalInformationScreen';
+import FavouriteFruitScreen from './FavouriteFruitScreen';
+import FavouriteFruitDetailScreen from './FavouriteFruitDetailScreen';
 
 const Stack = createStackNavigator();
 
-export default function StackNavigationSetting() {
+export default function StackNavigationSetting({ navigation }) {
   return (
     // <NavigationContainer>
     <Stack.Navigator initialRouteName="Setting">
@@ -31,6 +35,7 @@ export default function StackNavigationSetting() {
         name="ChangePassword"
         component={ChangePasswordScreen}
         options={{
+          title: 'Change Password',
           headerStyle: {
             backgroundColor: '#09B44C',
           },
@@ -42,6 +47,53 @@ export default function StackNavigationSetting() {
         name="DetectHistory"
         component={DetectHistoryScreen}
         options={{
+          title: 'Detect History',
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
+      />
+
+      <Stack.Screen
+        name="DetectFruitDetail"
+        component={DetectFruitDetailScreen}
+        options={{
+          title: 'Detect fruit detail',
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
+      />
+
+      <Stack.Screen
+        name="PersonalInformation"
+        component={PersonalInformationScreen}
+        options={{
+          title: 'Personal information',
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen
+        name="FavouriteFruit"
+        component={FavouriteFruitScreen}
+        options={{
+          title: 'Favourite fruit',
+          headerStyle: {
+            backgroundColor: '#09B44C',
+          },
+          // headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen
+        name="FavouriteFruitDetail"
+        component={FavouriteFruitDetailScreen}
+        options={{
+          title: 'Favourite fruit detail',
           headerStyle: {
             backgroundColor: '#09B44C',
           },

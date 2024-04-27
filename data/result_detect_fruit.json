@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "image_input": "https://i.ebayimg.com/images/g/DJcAAOSwpsdhydMG/s-l400.jpg",
+        "image_output": "https://i.ebayimg.com/images/g/DJcAAOSwpsdhydMG/s-l400.jpg",
+        "name": "Ripe banana",
+        "time": "26-04-2024 21:00:00"
+    },
+    {
+        "id": 2,
+        "image_input": "https://www.busbysbakery.com/wp-content/themes/yootheme/cache/f3/unripe-bananas-1-f3939e41.jpeg",
+        "image_output": "https://www.busbysbakery.com/wp-content/themes/yootheme/cache/f3/unripe-bananas-1-f3939e41.jpeg",
+        "name": "Unripe banana",
+        "time": "26-04-2024 21:30:00"
+    },
+    {
+        "id": 3,
+        "image_input": "https://m.media-amazon.com/images/I/41uKSIY+MAL._AC_UF1000,1000_QL80_.jpg",
+        "image_output": "https://m.media-amazon.com/images/I/41uKSIY+MAL._AC_UF1000,1000_QL80_.jpg",
+        "name": "Ripe orange",
+        "time": "27-04-2024 22:00:00"
+    },
+    {
+        "id": 4,
+        "image_input": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtnH8ZtRMw5f-MTvZdk-hnFHPC47vJDl41G_qAq_UZwpA9VkK4o9x_OQ4zD2iBvAN7GLw&usqp=CAUhttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtnH8ZtRMw5f-MTvZdk-hnFHPC47vJDl41G_qAq_UZwpA9VkK4o9x_OQ4zD2iBvAN7GLw&usqp=CAU",
+        "image_output": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtnH8ZtRMw5f-MTvZdk-hnFHPC47vJDl41G_qAq_UZwpA9VkK4o9x_OQ4zD2iBvAN7GLw&usqp=CAUhttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtnH8ZtRMw5f-MTvZdk-hnFHPC47vJDl41G_qAq_UZwpA9VkK4o9x_OQ4zD2iBvAN7GLw&usqp=CAU",
+        "name": "Unripe orange",
+        "time": "28-04-2024 23:00:00"
+    }
+]

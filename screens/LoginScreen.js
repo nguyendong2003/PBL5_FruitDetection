@@ -20,7 +20,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
 
+import { useAuth } from './AuthContext';
+
+import accountList from '../data/account.json';
+
 export default function LoginScreen({ navigation }) {
+  const { currentUser, setUser } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -78,8 +83,19 @@ export default function LoginScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
-      alert('Register successfully');
-      navigation.navigate('TabNavigationHome');
+
+      let foundUser = accountList.find(
+        (user) => user.username === username && user.password === password
+      );
+      console.log(foundUser);
+      if (foundUser) {
+        setUser(foundUser);
+
+        navigation.navigate('TabNavigationHome');
+      } else {
+        Alert.alert('Invalid credentials', 'Username or password is incorrect');
+      }
+      // alert('Register successfully');
       // Your registration logic here
       // For example: navigation.navigate('Home');
     }

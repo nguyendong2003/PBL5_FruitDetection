@@ -59,66 +59,71 @@ export default function TabNavigationHome({ navigation }) {
   // console.log({ windowWidth, windowHeight });
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarLabelPosition: 'below-icon',
-        tabBarShowLabel: true,
+    <View style={{ width: windowWidth, height: windowHeight }}>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarLabelPosition: 'below-icon',
+          tabBarShowLabel: true,
+          // tabBarHideOnKeyboard: true, // Khi bàn phím hiện lên thì ẩn thanh tab đi
+          // tabBarActiveBackgroundColor: 'green', // đổi màu nền của tab item được click
 
-        // tabBarActiveBackgroundColor: 'green', // đổi màu nền của tab item được click
-
-        // tabBarInactiveTintColor: "blue",     // đổi màu chữ của tab item không được click
-        // tabBarInactiveBackgroundColor: "purple", // đổi màu nền của tab item không được click
-      }}
-    >
-      <Tab.Screen
-        name="StackNavigationHome"
-        component={StackNavigationHome}
-        options={{
-          headerShown: false,
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color }) => (
-            <Entypo name="home" size={24} color={color} />
-          ),
-          tabBarLabelStyle: {
-            fontSize: 14,
-            fontWeight: 'bold',
-          },
-          tabBarActiveTintColor: '#09B44C',
+          // tabBarInactiveTintColor: "blue",     // đổi màu chữ của tab item không được click
+          // tabBarInactiveBackgroundColor: "purple", // đổi màu nền của tab item không được click
         }}
-      />
-      <Tab.Screen
-        name="Detect"
-        component={DetectScreen}
-        options={{
-          headerShown: false,
-          tabBarLabel: 'Detect',
-          tabBarIcon: ({ color }) => (
-            <AntDesign name="scan1" size={24} color={color} />
-          ),
-          tabBarLabelStyle: {
-            fontSize: 14,
-            fontWeight: 'bold',
-          },
-          tabBarActiveTintColor: '#09B44C',
-        }}
-      />
-      <Tab.Screen
-        name="StackNavigationSetting"
-        component={StackNavigationSetting}
-        options={{
-          headerShown: false,
-          tabBarLabel: 'Setting',
-          tabBarIcon: ({ color }) => (
-            <Fontisto name="player-settings" size={24} color={color} />
-          ),
-          tabBarLabelStyle: {
-            fontSize: 14,
-            fontWeight: 'bold',
-          },
-          tabBarActiveTintColor: '#09B44C',
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="StackNavigationHome"
+          component={StackNavigationHome}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color }) => (
+              <Entypo name="home" size={24} color={color} />
+            ),
+            tabBarLabelStyle: {
+              fontSize: 14,
+              fontWeight: 'bold',
+            },
+            tabBarActiveTintColor: '#09B44C',
+            unmountOnBlur: true, // khi click vào tab này thì tab này được reload lại (như ban đầu)  =>  prop 'unmountOnBlur' được sử dụng để quyết định liệu màn hình có nên được unmount (không còn render) khi không còn được focus hay không. Khi unmountOnBlur được đặt thành true, màn hình sẽ bị unmount khi người dùng chuyển sang một màn hình khác. Điều này có thể hữu ích để giải phóng tài nguyên khi màn hình không còn được sử dụng và giúp tối ưu hóa hiệu suất ứng dụng, đặc biệt là trong các trường hợp màn hình đó có nhiều nội dung hoặc tài nguyên tốn kém.
+          }}
+        />
+        <Tab.Screen
+          name="Detect"
+          component={DetectScreen}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Detect',
+            tabBarIcon: ({ color }) => (
+              <AntDesign name="scan1" size={24} color={color} />
+            ),
+            tabBarLabelStyle: {
+              fontSize: 14,
+              fontWeight: 'bold',
+            },
+            tabBarActiveTintColor: '#09B44C',
+            unmountOnBlur: true, // khi click vào tab này thì tab này được reload lại (như ban đầu)
+          }}
+        />
+        <Tab.Screen
+          name="StackNavigationSetting"
+          component={StackNavigationSetting}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Setting',
+            tabBarIcon: ({ color }) => (
+              <Fontisto name="player-settings" size={24} color={color} />
+            ),
+            tabBarLabelStyle: {
+              fontSize: 14,
+              fontWeight: 'bold',
+            },
+            tabBarActiveTintColor: '#09B44C',
+            unmountOnBlur: true, // khi click vào tab này thì tab này được reload lại (như ban đầu)
+          }}
+        />
+      </Tab.Navigator>
+    </View>
   );
 }
 

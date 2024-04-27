@@ -23,7 +23,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 
 // fruit.json
-import fruitList from '../data/fruit.json';
+import resultDetectFruit from '../data/result_detect_fruit.json';
 
 export default function DetectHistoryScreen({ navigation }) {
   const [search, setSearch] = useState('');
@@ -62,75 +62,92 @@ export default function DetectHistoryScreen({ navigation }) {
         behavior="padding"
       >
         <View style={styles.scrollContainer}>
-          <View style={styles.topContainer}>
-            <View>
-              <Text style={{ fontSize: 20 }}>
-                Welcome
-                <Image
-                  source={require('../assets/hand3.png')}
-                  style={{ width: 20, height: 20 }}
-                />
-              </Text>
-              <Text
-                style={{ color: 'black', fontWeight: 'bold', fontSize: 20 }}
-              >
-                nhathung2207
-              </Text>
-            </View>
-
-            <Pressable onPress={() => alert('Profile clicked')}>
-              {/* <MaterialCommunityIcons
-                  name={'account-circle-outline'}
-                  size={40}
-                /> */}
-              <Image
-                source={require('../assets/41.jpg')}
-                style={{
-                  height: 60,
-                  width: 60,
-                  borderRadius: 100,
-                }}
-              />
-            </Pressable>
-          </View>
-
-          <View style={[styles.searchContainer]}>
-            <FontAwesome name="search" size={24} color="black" />
-            <TextInput
-              style={styles.inputSearch}
-              value={search}
-              onChangeText={(text) => {
-                setSearch(text);
-              }}
-              placeholder="Search"
-            />
-          </View>
-
           <FlatList
-            style={{ marginTop: 16, marginBottom: 16 }}
-            data={fruitList}
+            style={{ marginTop: 8, marginBottom: 8 }}
+            data={resultDetectFruit}
             renderItem={({ item }) => {
               return (
                 <Pressable
                   onPress={() =>
-                    navigation.navigate('FruitDetail', { fruit: item })
+                    navigation.navigate('DetectFruitDetail', {
+                      fruit: item,
+                    })
                   }
                 >
-                  <View style={styles.card} key={item.id}>
-                    <Image
-                      source={{ uri: item.image }}
-                      style={{
-                        width: (windowWidth - 32 - 80) / 2,
-                        height: (windowWidth - 32 - 80) / 2,
-                      }}
-                    />
-                    <Text style={styles.cardText}>{item.name}</Text>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      padding: 4,
+                      color: '#09B44C',
+                    }}
+                  >
+                    {item?.time}
+                  </Text>
+                  <View
+                    style={[
+                      styles.card,
+                      {
+                        width: windowWidth - 32 - 20,
+                        height: (windowWidth - 32 - 20) / 2,
+                      },
+                    ]}
+                    key={item.id}
+                  >
+                    <View>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          marginBottom: 4,
+                        }}
+                      >
+                        Input
+                      </Text>
+                      <Image
+                        source={{ uri: item?.image_input }}
+                        // source={require('../assets/banana_400.jpg')}
+                        // source={require('../assets/23.jpg')}
+                        style={{
+                          width: (windowWidth - 32 - 120) / 2,
+                          height: (windowWidth - 32 - 120) / 2,
+
+                          // width: '100%',
+                          // width: 100,
+                          // height: 100,
+                        }}
+                      />
+                    </View>
+
+                    <View>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          marginBottom: 4,
+                        }}
+                      >
+                        Output
+                      </Text>
+                      <Image
+                        source={{ uri: item?.image_output }}
+                        // source={require('../assets/banana_400.jpg')}
+                        // source={require('../assets/23.jpg')}
+                        style={{
+                          width: (windowWidth - 32 - 120) / 2,
+                          height: (windowWidth - 32 - 120) / 2,
+
+                          // width: 100,
+                          // height: 100,
+                          // width: '100%',
+                        }}
+                      />
+                    </View>
                   </View>
                 </Pressable>
               );
             }}
-            numColumns={2}
-            keyExtractor={(item, index) => item.id.toString()}
+            keyExtractor={(item, index) => item?.id.toString()}
             ItemSeparatorComponent={<View style={{ height: 16 }}></View>}
             ListEmptyComponent={
               <Text
@@ -160,21 +177,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     flexGrow: 1,
     alignItems: 'center',
     padding: 16,
   },
-  topContainer: {
-    width: '100%',
+  //
+  card: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  //
-  card: {
     backgroundColor: 'white',
     padding: 16,
     borderRadius: 8,

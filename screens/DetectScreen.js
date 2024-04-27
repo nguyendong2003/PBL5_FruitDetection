@@ -52,16 +52,16 @@ export default function DetectScreen({ navigation, route }) {
     return () => subscription?.remove();
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Reset state when screen gets focused again
-      setPhoto(null);
-      setImage(null);
-      setShowCamera(false); // Assuming you want to hide camera when screen is focused again
-    });
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // Reset state when screen gets focused again
+  //     setPhoto(null);
+  //     setImage(null);
+  //     setShowCamera(false); // Assuming you want to hide camera when screen is focused again
+  //   });
 
-    return unsubscribe;
-  }, [navigation]);
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const { window } = dimensions;
   const windowWidth = window.width;
@@ -133,40 +133,45 @@ export default function DetectScreen({ navigation, route }) {
               // type={type}
               style={[
                 {
-                  width: '100%',
-                  height: '100%',
-                  alignItems: 'center',
+                  // width: '100%',
+                  // height: '100%',
+                  // flex: 1,
+                  width: windowWidth,
+                  height: windowWidth,
+                  // alignItems: 'center',
+                  // width: windowWidth,
+                  // height: windowHeight,
                 },
               ]}
               type={type}
               ref={cameraRef}
               ratio={'1:1'}
+            ></Camera>
+            <Pressable
+              style={{
+                position: 'absolute',
+                top: windowWidth + 150,
+                left: windowWidth / 2 - 24,
+              }}
+              onPress={takePicture}
             >
-              <Pressable
-                style={{
-                  position: 'absolute',
-                  top: windowHeight - 150,
-                }}
-                onPress={takePicture}
-              >
-                <Entypo name="camera" size={48} color="white" />
-              </Pressable>
+              <Entypo name="camera" size={48} color="black" />
+            </Pressable>
 
-              <Pressable
-                style={{
-                  position: 'absolute',
-                  top: windowHeight - 150,
-                  left: windowWidth / 2 + 80,
-                }}
-                onPress={toggleCameraType}
-              >
-                <MaterialIcons
-                  name="flip-camera-android"
-                  size={48}
-                  color="white"
-                />
-              </Pressable>
-            </Camera>
+            <Pressable
+              style={{
+                position: 'absolute',
+                top: windowWidth + 150,
+                left: windowWidth / 2 + 80,
+              }}
+              onPress={toggleCameraType}
+            >
+              <MaterialIcons
+                name="flip-camera-android"
+                size={48}
+                color="black"
+              />
+            </Pressable>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

@@ -25,16 +25,11 @@ import {
 
 import { useState, useEffect } from 'react';
 
-import { useAuth } from './AuthContext';
-
 // fruit.json
 import fruitList from '../data/fruit.json';
 import favouriteFruitList from '../data/favourite_fruit.json';
 
-export default function HomeScreen({ navigation }) {
-  //
-  const { currentUser } = useAuth();
-  //
+export default function FavouriteFruitScreen({ navigation }) {
   const [search, setSearch] = useState('');
   const [filteredFruitList, setFilteredFruitList] = useState(fruitList);
   // const [filteredFruitList, setFilteredFruitList] = useState(fruitList);
@@ -57,8 +52,10 @@ export default function HomeScreen({ navigation }) {
       favourite: favouriteIds.includes(fruit.id),
     }));
     // Filter the fruit list based on the search text
-    const filteredList = updatedFruitList.filter((fruit) =>
-      fruit?.name.toLowerCase().includes(search.toLowerCase())
+    const filteredList = updatedFruitList.filter(
+      (fruit) =>
+        fruit?.name.toLowerCase().includes(search.toLowerCase()) &&
+        fruit.favourite
     );
     setFilteredFruitList(filteredList);
   }, [search]);
@@ -84,42 +81,6 @@ export default function HomeScreen({ navigation }) {
         behavior="padding"
       >
         <View style={styles.scrollContainer}>
-          <View style={styles.topContainer}>
-            <View>
-              <Text style={{ fontSize: 20 }}>
-                Welcome
-                <Image
-                  source={require('../assets/hand3.png')}
-                  style={{ width: 20, height: 20 }}
-                />
-              </Text>
-              <Text
-                style={{ color: 'black', fontWeight: 'bold', fontSize: 20 }}
-              >
-                {/* nhathung2207 */}
-                {currentUser?.display_name}
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={() => navigation.navigate('PersonalInformation')}
-            >
-              {/* <MaterialCommunityIcons
-                name={'account-circle-outline'}
-                size={40}
-              /> */}
-              <Image
-                // source={require('../assets/41.jpg')}
-                source={{ uri: currentUser?.image }}
-                style={{
-                  height: 60,
-                  width: 60,
-                  borderRadius: 100,
-                }}
-              />
-            </Pressable>
-          </View>
-
           <View style={[styles.searchContainer]}>
             <FontAwesome name="search" size={24} color="black" />
             <TextInput
@@ -144,7 +105,7 @@ export default function HomeScreen({ navigation }) {
               return (
                 <Pressable
                   onPress={() =>
-                    navigation.navigate('FruitDetail', { fruit: item })
+                    navigation.navigate('FavouriteFruitDetail', { fruit: item })
                   }
                 >
                   <View style={styles.card} key={item.id}>
@@ -182,6 +143,7 @@ export default function HomeScreen({ navigation }) {
                   color: 'red',
                   fontSize: 24,
                   flex: 1,
+                  width: '100%',
                   textAlign: 'center',
                 }}
               >
@@ -204,7 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     flexGrow: 1,

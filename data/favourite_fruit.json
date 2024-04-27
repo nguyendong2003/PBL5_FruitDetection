@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "fruit_id": 1
+    },
+    {
+        "id": 2,
+        "fruit_id": 3
+    },
+    {
+        "id": 3,
+        "fruit_id": 5
+    },
+    {
+        "id": 4,
+        "fruit_id": 6
+    },
+    {
+        "id": 5,
+        "fruit_id": 9
+    }
+]
