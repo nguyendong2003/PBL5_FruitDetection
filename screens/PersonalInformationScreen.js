@@ -36,7 +36,7 @@ export default function PersonalInformationScreen({ navigation }) {
   //
   const { currentUser, setUser } = useAuth();
   //
-  const [displayName, setDisplayName] = useState(currentUser?.display_name);
+  const [displayName, setDisplayName] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
   const [phoneNumber, setPhoneNumber] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
