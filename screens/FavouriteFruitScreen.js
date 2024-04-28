@@ -25,15 +25,43 @@ import {
 
 import { useState, useEffect } from 'react';
 
-// fruit.json
-import fruitList from '../data/fruit.json';
-import favouriteFruitList from '../data/favourite_fruit.json';
+import { useAuth } from './AuthContext';
+
+import { getFirestore, collection, getDocs, where, getDoc, onSnapshot, query } from "firebase/firestore";
+
+import { app } from '../firebaseConfig';
 
 export default function FavouriteFruitScreen({ navigation }) {
+  const { currentUser } = useAuth();
+  const db = getFirestore(app)
+  const [fruits, setFruits ] = useState([])
+  const [favoriteIds, setFavoriteIds] = useState([])
+  useEffect(() => {
+    getFruits()
+    getFavoriteIds()
+  }, [])
+  const getFavoriteIds = async() => {
+    const q = query(collection(db, "users", currentUser.id, "favorite-fruits"))
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      setFavoriteIds([])
+      
+      querySnapshot.forEach((doc) => {
+        setFavoriteIds(favoriteIds => [...favoriteIds, doc.data().id_fruit])
+      });
+    });
+  }
+
+  const getFruits = async() => {
+    setFruits([])
+    const querySnapshot = await getDocs(collection(db, "fruits"));
+    querySnapshot.forEach((doc) => {
+      // console.log(doc.id, " => ", doc.data());
+      setFruits(fruits => [...fruits, doc.data()])
+    });
+    // console.log(fruits)
+  }
   const [search, setSearch] = useState('');
-  const [filteredFruitList, setFilteredFruitList] = useState(fruitList);
-  // const [filteredFruitList, setFilteredFruitList] = useState(fruitList);
-  const favouriteIds = favouriteFruitList.map((item) => item.fruit_id);
+  const [filteredFruitList, setFilteredFruitList] = useState([]);
 
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -47,9 +75,9 @@ export default function FavouriteFruitScreen({ navigation }) {
   });
 
   useEffect(() => {
-    const updatedFruitList = fruitList.map((fruit) => ({
+    const updatedFruitList = fruits.map((fruit) => ({
       ...fruit,
-      favourite: favouriteIds.includes(fruit.id),
+      favourite: favoriteIds.includes(fruit.id_fruit),
     }));
     // Filter the fruit list based on the search text
     const filteredList = updatedFruitList.filter(
@@ -58,7 +86,7 @@ export default function FavouriteFruitScreen({ navigation }) {
         fruit.favourite
     );
     setFilteredFruitList(filteredList);
-  }, [search]);
+  }, [search, fruits, favoriteIds]);
 
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
@@ -108,7 +136,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                     navigation.navigate('FavouriteFruitDetail', { fruit: item })
                   }
                 >
-                  <View style={styles.card} key={item.id}>
+                  <View style={styles.card} key={item.id_fruit}>
                     <Image
                       source={{ uri: item.image }}
                       style={{
@@ -135,7 +163,7 @@ export default function FavouriteFruitScreen({ navigation }) {
               );
             }}
             numColumns={2}
-            keyExtractor={(item, index) => item.id.toString()}
+            keyExtractor={(item, index) => item.id_fruit.toString()}
             ItemSeparatorComponent={<View style={{ height: 4 }}></View>}
             ListEmptyComponent={
               <Text

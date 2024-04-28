@@ -107,7 +107,7 @@ export default function SettingScreen({ navigation, route }) {
                   }}
                 >
                   {/* nhathung2207 */}
-                  {currentUser?.display_name}
+                  {currentUser?.fullname}
                 </Text>
               </View>
             </View>
