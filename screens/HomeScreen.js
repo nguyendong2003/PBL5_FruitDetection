@@ -27,10 +27,6 @@ import { useState, useEffect } from 'react';
 
 import { useAuth } from './AuthContext';
 
-// fruit.json
-import fruitList from '../data/fruit.json';
-import favouriteFruitList from '../data/favourite_fruit.json';
-
 
 import { getFirestore, collection, getDocs, where, getDoc, onSnapshot, query } from "firebase/firestore";
 
@@ -150,7 +146,6 @@ export default function HomeScreen({ navigation }) {
                   width: 60,
                   borderRadius: 100,
                 }}
-                resizeMode='repeat'
               />
             </Pressable>
           </View>
