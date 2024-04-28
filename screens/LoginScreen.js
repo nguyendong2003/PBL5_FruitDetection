@@ -26,7 +26,7 @@ import accountList from '../data/account.json';
 
 export default function LoginScreen({ navigation }) {
   const { currentUser, setUser } = useAuth();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -45,7 +45,7 @@ export default function LoginScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setUsername('');
+      setEmail('');
       setPassword('');
       setShowPassword(false);
       setErrors({});
@@ -67,9 +67,9 @@ export default function LoginScreen({ navigation }) {
   const handleRegister = () => {
     let newErrors = {};
 
-    // Kiểm tra username
-    if (!username) {
-      newErrors['usernameError'] = 'Username cannot be empty';
+    // Kiểm tra email
+    if (!email) {
+      newErrors['emailError'] = 'Email address cannot be empty';
     }
 
     // Kiểm tra mật khẩu
@@ -85,7 +85,7 @@ export default function LoginScreen({ navigation }) {
       setErrors({});
 
       let foundUser = accountList.find(
-        (user) => user.username === username && user.password === password
+        (user) => user.email === email && user.password === password
       );
       console.log(foundUser);
       if (foundUser) {
@@ -93,7 +93,7 @@ export default function LoginScreen({ navigation }) {
 
         navigation.navigate('TabNavigationHome');
       } else {
-        Alert.alert('Invalid credentials', 'Username or password is incorrect');
+        Alert.alert('Invalid credentials', 'Email or password is incorrect');
       }
       // alert('Register successfully');
       // Your registration logic here
@@ -121,22 +121,22 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.form}>
             <Text style={styles.textTitle}>Login</Text>
 
-            <Text style={styles.labelForm}>Username</Text>
+            <Text style={styles.labelForm}>Email address</Text>
             <TextInput
-              style={styles.inputUsername}
-              value={username}
-              //   onChangeText={setUsername}
+              style={styles.inputEmail}
+              value={email}
+              //   onChangeText={setEmail}
               onChangeText={(text) => {
-                setUsername(text);
+                setEmail(text);
                 // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['usernameError']) {
-                  setErrors({ ...errors, usernameError: null });
+                if (errors['emailError']) {
+                  setErrors({ ...errors, emailError: null });
                 }
               }}
-              placeholder="Enter your username"
+              placeholder="Enter your email address"
             />
-            {errors['usernameError'] ? (
-              <Text style={styles.errorText}>{errors['usernameError']}</Text>
+            {errors['emailError'] ? (
+              <Text style={styles.errorText}>{errors['emailError']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>Password</Text>
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
   },
-  inputUsername: {
+  inputEmail: {
     height: 40,
     borderColor: '#ddd',
     borderWidth: 1,

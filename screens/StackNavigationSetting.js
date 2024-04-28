@@ -39,7 +39,7 @@ export default function StackNavigationSetting({ navigation }) {
           headerStyle: {
             backgroundColor: '#09B44C',
           },
-          // headerTintColor: 'white',
+          headerTintColor: 'white',
         }}
       />
 
@@ -51,7 +51,7 @@ export default function StackNavigationSetting({ navigation }) {
           headerStyle: {
             backgroundColor: '#09B44C',
           },
-          // headerTintColor: 'white',
+          headerTintColor: 'white',
         }}
       />
 
@@ -63,7 +63,7 @@ export default function StackNavigationSetting({ navigation }) {
           headerStyle: {
             backgroundColor: '#09B44C',
           },
-          // headerTintColor: 'white',
+          headerTintColor: 'white',
         }}
       />
 
@@ -75,7 +75,7 @@ export default function StackNavigationSetting({ navigation }) {
           headerStyle: {
             backgroundColor: '#09B44C',
           },
-          // headerTintColor: 'white',
+          headerTintColor: 'white',
         }}
       />
       <Stack.Screen
@@ -86,7 +86,7 @@ export default function StackNavigationSetting({ navigation }) {
           headerStyle: {
             backgroundColor: '#09B44C',
           },
-          // headerTintColor: 'white',
+          headerTintColor: 'white',
         }}
       />
       <Stack.Screen
@@ -97,7 +97,7 @@ export default function StackNavigationSetting({ navigation }) {
           headerStyle: {
             backgroundColor: '#09B44C',
           },
-          // headerTintColor: 'white',
+          headerTintColor: 'white',
         }}
       />
     </Stack.Navigator>
