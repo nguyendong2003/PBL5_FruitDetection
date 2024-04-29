@@ -43,7 +43,7 @@ export default function PersonalInformationScreen({ navigation }) {
   let updatedUser = currentUser
   // const {updatedUser, setUpdatedUser} = useState({})
   //
-  const [fullName, setfullName] = useState(currentUser?.fullname);
+  const [fullname, setFullname] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
   const [phone, setPhone] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
@@ -198,12 +198,21 @@ export default function PersonalInformationScreen({ navigation }) {
  
 
   const handleUpdateProfile = async() => {
+    await setGenderOfUpdatedUser()
     await uploadMedia()
     // console.log(updatedUser)
     await updateProfile()
     alert('Update profile successfully');
     // navigation.navigate('Setting');
   };
+
+  const setGenderOfUpdatedUser = async() => {
+    if(Object.keys(updatedUser).includes(gender)) {
+      updatedUser.gender = gender;
+    } else {
+      updatedUser = {...updatedUser, gender};
+    }
+  }
 
   const updateProfile = async () => {
     await setDoc(doc(db, "users", currentUser.id), updatedUser);
@@ -378,7 +387,7 @@ export default function PersonalInformationScreen({ navigation }) {
               <View style={styles.radioButton}>
                 <RadioButton
                   value="no"
-                  status={gender === 'no' ? 'checked' : 'unchecked'}
+                  status={(gender === 'no' || gender == null) ? 'checked' : 'unchecked'}
                   onPress={() => setGender('no')}
                   color="#007BFF"
                 />

@@ -67,7 +67,7 @@ export default function DetectScreen({ navigation, route }) {
   const windowWidth = window.width;
   const windowHeight = window.height;
 
-  console.log({ windowWidth, windowHeight });
+  // console.log({ windowWidth, windowHeight });
 
   // image
   const [image, setImage] = useState(null);
