@@ -110,8 +110,7 @@ export default function SettingScreen({ navigation, route }) {
                     fontSize: 24,
                   }}
                 >
-                  {/* nhathung2207 */}
-                  {currentUser?.fullName}
+                  {currentUser?.fullname}
                 </Text>
               </View>
             </View>

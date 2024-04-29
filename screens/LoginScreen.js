@@ -23,8 +23,20 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
 import accountList from '../data/account.json';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  where,
+  getDoc,
+  onSnapshot,
+  query,
+} from 'firebase/firestore';
+
+import { app } from '../firebaseConfig';
 
 export default function LoginScreen({ navigation }) {
+  const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,7 +76,7 @@ export default function LoginScreen({ navigation }) {
     setShowPassword(!showPassword);
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     let newErrors = {};
 
     // Kiểm tra email
@@ -84,20 +96,35 @@ export default function LoginScreen({ navigation }) {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
 
-      let foundUser = accountList.find(
-        (user) => user.email === email && user.password === password
-      );
-      console.log(foundUser);
-      if (foundUser) {
-        setUser(foundUser);
+      try {
+        const userRef = collection(db, 'users');
+        const q = query(
+          userRef,
+          where('email', '==', username),
+          where('password', '==', password)
+        );
+        const querySnapshot = await getDocs(q);
 
-        navigation.navigate('TabNavigationHome');
-      } else {
-        Alert.alert('Invalid credentials', 'Email or password is incorrect');
+        if (querySnapshot.empty) {
+          // Không tìm thấy user với username và password tương ứng
+          Alert.alert(
+            'Invalid credentials',
+            'Username or password is incorrect'
+          );
+        } else {
+          const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const user = doc.data();
+              setUser(user);
+              navigation.navigate('TabNavigationHome');
+            });
+            // console.log(favoriteIds)
+          });
+        }
+      } catch (error) {
+        console.error('Error getting documents: ', error);
+        // Xử lý lỗi ở đây nếu có
       }
-      // alert('Register successfully');
-      // Your registration logic here
-      // For example: navigation.navigate('Home');
     }
   };
 
