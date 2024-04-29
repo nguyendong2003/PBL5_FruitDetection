@@ -189,13 +189,16 @@ export default function HomeScreen({ navigation }) {
                     borderBottomWidth: 2,
                     borderColor: '#e2e3e5',
                   }}
-                  onPress={() => navigation.navigate('PersonalInformation')}
+                  onPress={() => {
+                    setIsAvatarFocus(false);
+                    navigation.navigate('PersonalInformation');
+                  }}
                 >
                   <Fontisto name="person" size={24} color="#ffc107" />
                   <Text
                     style={{ fontSize: 16, fontWeight: '600', marginLeft: 16 }}
                   >
-                    Personal Information
+                    Profile
                   </Text>
                 </Pressable>
                 <Pressable
@@ -208,6 +211,7 @@ export default function HomeScreen({ navigation }) {
                   }}
                   onPress={() => {
                     setUser(null);
+                    setIsAvatarFocus(false);
                     navigation.navigate('Login');
                   }}
                 >
@@ -223,7 +227,7 @@ export default function HomeScreen({ navigation }) {
           </View>
 
           <View style={[styles.searchContainer]}>
-            <FontAwesome name="search" size={24} color="black" />
+            <FontAwesome name="search" size={24} color="#3C3C43" />
             <TextInput
               style={styles.inputSearch}
               value={search}

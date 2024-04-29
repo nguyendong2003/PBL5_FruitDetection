@@ -26,7 +26,7 @@ import { useState, useEffect } from 'react';
 import resultDetectFruit from '../data/result_detect_fruit.json';
 
 export default function DetectHistoryScreen({ navigation }) {
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
 
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -39,13 +39,26 @@ export default function DetectHistoryScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Reset state when screen gets focused again
-      setSearch('');
-    });
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // Reset state when screen gets focused again
+  //     setSearch('');
+  //   });
 
-    return unsubscribe;
+  //   return unsubscribe;
+  // }, [navigation]);
+
+  // Hidden bottom navigation when navigate to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
   }, [navigation]);
 
   const { window } = dimensions;

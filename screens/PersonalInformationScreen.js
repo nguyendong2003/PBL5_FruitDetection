@@ -37,7 +37,7 @@ export default function PersonalInformationScreen({ navigation }) {
   //
   const { currentUser, setUser } = useAuth();
   //
-  const [fullName, setfullName] = useState(currentUser?.fullName);
+  const [fullName, setfullName] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
   const [phoneNumber, setPhoneNumber] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
@@ -48,7 +48,7 @@ export default function PersonalInformationScreen({ navigation }) {
 
   // pick date
   const [dateOfBirth, setDateOfBirth] = useState(
-    new Date(Date.parse(currentUser?.dateOfBirth))
+    new Date(Date.parse(currentUser?.dateofbirth))
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -98,6 +98,19 @@ export default function PersonalInformationScreen({ navigation }) {
     });
     return () => subscription?.remove();
   });
+
+  // Hidden bottom navigation when navigate to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
 
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
@@ -176,7 +189,7 @@ export default function PersonalInformationScreen({ navigation }) {
               }}
             >
               <View>
-                {currentUser?.image ? (
+                {image ? (
                   <Image
                     source={{ uri: image }}
                     style={{

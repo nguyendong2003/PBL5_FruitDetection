@@ -100,17 +100,14 @@ export default function LoginScreen({ navigation }) {
         const userRef = collection(db, 'users');
         const q = query(
           userRef,
-          where('email', '==', username),
+          where('email', '==', email),
           where('password', '==', password)
         );
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          // Không tìm thấy user với username và password tương ứng
-          Alert.alert(
-            'Invalid credentials',
-            'Username or password is incorrect'
-          );
+          // Không tìm thấy user với email và password tương ứng
+          Alert.alert('Invalid credentials', 'Email or password is incorrect');
         } else {
           const unsubscribe = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {

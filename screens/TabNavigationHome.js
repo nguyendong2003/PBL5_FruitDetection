@@ -59,7 +59,14 @@ export default function TabNavigationHome({ navigation }) {
   // console.log({ windowWidth, windowHeight });
 
   return (
-    <View style={{ width: windowWidth, height: windowHeight }}>
+    <View
+      style={{
+        // width: windowWidth,
+        // height: windowHeight,
+        width: '100%',
+        height: '100%',
+      }}
+    >
       <Tab.Navigator
         screenOptions={{
           tabBarLabelPosition: 'below-icon',

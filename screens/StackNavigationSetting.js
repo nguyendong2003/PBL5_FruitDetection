@@ -10,6 +10,8 @@ import {
 import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
+import { Ionicons } from '@expo/vector-icons';
 // screen
 import SettingScreen from './SettingScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
@@ -40,6 +42,15 @@ export default function StackNavigationSetting({ navigation }) {
             backgroundColor: '#09B44C',
           },
           headerTintColor: 'white',
+          headerLeft: () => (
+            <Ionicons
+              style={{ marginLeft: 12 }}
+              name="chevron-back-circle-sharp"
+              size={48}
+              color="white"
+              onPress={() => navigation.navigate('Setting')}
+            />
+          ),
         }}
       />
 
@@ -52,6 +63,15 @@ export default function StackNavigationSetting({ navigation }) {
             backgroundColor: '#09B44C',
           },
           headerTintColor: 'white',
+          headerLeft: () => (
+            <Ionicons
+              style={{ marginLeft: 12 }}
+              name="chevron-back-circle-sharp"
+              size={48}
+              color="white"
+              onPress={() => navigation.navigate('Setting')}
+            />
+          ),
         }}
       />
 
@@ -64,6 +84,15 @@ export default function StackNavigationSetting({ navigation }) {
             backgroundColor: '#09B44C',
           },
           headerTintColor: 'white',
+          headerLeft: () => (
+            <Ionicons
+              style={{ marginLeft: 12 }}
+              name="chevron-back-circle-sharp"
+              size={48}
+              color="white"
+              onPress={() => navigation.navigate('Setting')}
+            />
+          ),
         }}
       />
 
@@ -76,6 +105,15 @@ export default function StackNavigationSetting({ navigation }) {
             backgroundColor: '#09B44C',
           },
           headerTintColor: 'white',
+          headerLeft: () => (
+            <Ionicons
+              style={{ marginLeft: 12 }}
+              name="chevron-back-circle-sharp"
+              size={48}
+              color="white"
+              onPress={() => navigation.navigate('Setting')}
+            />
+          ),
         }}
       />
       <Stack.Screen
@@ -87,6 +125,15 @@ export default function StackNavigationSetting({ navigation }) {
             backgroundColor: '#09B44C',
           },
           headerTintColor: 'white',
+          headerLeft: () => (
+            <Ionicons
+              style={{ marginLeft: 12 }}
+              name="chevron-back-circle-sharp"
+              size={48}
+              color="white"
+              onPress={() => navigation.navigate('Setting')}
+            />
+          ),
         }}
       />
       <Stack.Screen
@@ -98,6 +145,15 @@ export default function StackNavigationSetting({ navigation }) {
             backgroundColor: '#09B44C',
           },
           headerTintColor: 'white',
+          headerLeft: () => (
+            <Ionicons
+              style={{ marginLeft: 12 }}
+              name="chevron-back-circle-sharp"
+              size={48}
+              color="white"
+              onPress={() => navigation.navigate('FavouriteFruit')}
+            />
+          ),
         }}
       />
     </Stack.Navigator>

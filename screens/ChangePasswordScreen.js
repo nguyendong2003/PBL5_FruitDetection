@@ -42,20 +42,33 @@ export default function ChangePasswordScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
+  // Hidden bottom navigation when navigate to this screen
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Reset state when screen gets focused again
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmNewPassword('');
-      setShowCurrentPassword(false);
-      setShowNewPassword(false);
-      setShowConfirmNewPassword(false);
-      setErrors({});
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
     });
-
-    return unsubscribe;
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
   }, [navigation]);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // Reset state when screen gets focused again
+  //     setCurrentPassword('');
+  //     setNewPassword('');
+  //     setConfirmNewPassword('');
+  //     setShowCurrentPassword(false);
+  //     setShowNewPassword(false);
+  //     setShowConfirmNewPassword(false);
+  //     setErrors({});
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const { window } = dimensions;
   const windowWidth = window.width;
