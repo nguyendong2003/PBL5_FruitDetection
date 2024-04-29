@@ -22,7 +22,7 @@ export default function PrevHomeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <Image
         style={styles.imageApp}
-        source={require('../assets/facebook-logo.png')}
+        source={require('../assets/image-home-fruit.png')}
       />
     </SafeAreaView>
   );
