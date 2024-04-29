@@ -21,7 +21,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 
 export default function RegisterScreen({ navigation }) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -32,7 +33,8 @@ export default function RegisterScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setUsername('');
+      setEmail('');
+      setFullName('');
       setPassword('');
       setConfirmPassword('');
       setShowPassword(false);
@@ -53,9 +55,14 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = () => {
     let newErrors = {};
 
-    // Kiểm tra username
-    if (!username) {
-      newErrors['usernameError'] = 'Username cannot be empty';
+    // Kiểm tra email
+    if (!email) {
+      newErrors['emailError'] = 'Email address cannot be empty';
+    }
+
+    // Kiểm tra full name
+    if (!fullName) {
+      newErrors['fullNameError'] = 'Full name cannot be empty';
     }
 
     // Kiểm tra mật khẩu
@@ -79,8 +86,6 @@ export default function RegisterScreen({ navigation }) {
       setErrors({});
       alert('Register successfully');
       navigation.navigate('Login');
-      // Your registration logic here
-      // For example: navigation.navigate('Home');
     }
   };
 
@@ -104,22 +109,40 @@ export default function RegisterScreen({ navigation }) {
           <View style={styles.form}>
             <Text style={styles.textTitle}>Create an account</Text>
 
-            <Text style={styles.labelForm}>Username</Text>
+            <Text style={styles.labelForm}>Email address</Text>
             <TextInput
-              style={styles.inputUsername}
-              value={username}
-              //   onChangeText={setUsername}
+              style={styles.inputEmail}
+              value={email}
+              //   onChangeText={setEmail}
               onChangeText={(text) => {
-                setUsername(text);
+                setEmail(text);
                 // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['usernameError']) {
-                  setErrors({ ...errors, usernameError: null });
+                if (errors['emailError']) {
+                  setErrors({ ...errors, emailError: null });
                 }
               }}
-              placeholder="Enter your username"
+              placeholder="Enter your email address"
             />
-            {errors['usernameError'] ? (
-              <Text style={styles.errorText}>{errors['usernameError']}</Text>
+            {errors['emailError'] ? (
+              <Text style={styles.errorText}>{errors['emailError']}</Text>
+            ) : null}
+
+            <Text style={styles.labelForm}>Full name</Text>
+            <TextInput
+              style={styles.inputEmail}
+              value={fullName}
+              //   onChangeText={setEmail}
+              onChangeText={(text) => {
+                setFullName(text);
+                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
+                if (errors['fullNameError']) {
+                  setErrors({ ...errors, fullNameError: null });
+                }
+              }}
+              placeholder="Enter your full name"
+            />
+            {errors['fullNameError'] ? (
+              <Text style={styles.errorText}>{errors['fullNameError']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>Password</Text>
@@ -243,13 +266,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   form: {
     maxWidth: '100%',
     minWidth: '100%',
     backgroundColor: 'white',
     padding: 20,
+    paddingTop: 4,
     // borderRadius: 10,
     // shadowColor: 'black',
     // shadowOffset: {
@@ -266,7 +290,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
   },
-  inputUsername: {
+  inputEmail: {
     height: 40,
     borderColor: '#ddd',
     borderWidth: 1,

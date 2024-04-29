@@ -21,56 +21,65 @@ import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
+  Fontisto,
+  Entypo,
 } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
 
 import { useAuth } from './AuthContext';
 
-
-import { getFirestore, collection, getDocs, where, getDoc, onSnapshot, query } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  where,
+  getDoc,
+  onSnapshot,
+  query,
+} from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
 
 export default function HomeScreen({ navigation }) {
-  const db = getFirestore(app)
-  const [fruits, setFruits ] = useState([])
+  const db = getFirestore(app);
+  const [fruits, setFruits] = useState([]);
   useEffect(() => {
-    getFruits()
-    getFavoriteIds()
-  }, [])
+    getFruits();
+    getFavoriteIds();
+  }, []);
   //
-  const { currentUser } = useAuth();
+  const { currentUser, setUser } = useAuth();
   //
+  const [isAvatarFocus, setIsAvatarFocus] = useState(false);
   const [search, setSearch] = useState('');
   const [filteredFruitList, setFilteredFruitList] = useState([]);
-  const [favoriteIds, setFavoriteIds] = useState([])
+  const [favoriteIds, setFavoriteIds] = useState([]);
 
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
 
-  const getFavoriteIds = async() => {
-    const q = query(collection(db, "users", currentUser.id, "favorite-fruits"))
+  const getFavoriteIds = async () => {
+    const q = query(collection(db, 'users', currentUser.id, 'favorite-fruits'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      setFavoriteIds([])
-      
+      setFavoriteIds([]);
+
       querySnapshot.forEach((doc) => {
-        setFavoriteIds(favoriteIds => [...favoriteIds, doc.data().id_fruit])
+        setFavoriteIds((favoriteIds) => [...favoriteIds, doc.data().id_fruit]);
       });
     });
-  }
+  };
 
-  const getFruits = async() => {
-    setFruits([])
-    const querySnapshot = await getDocs(collection(db, "fruits"));
+  const getFruits = async () => {
+    setFruits([]);
+    const querySnapshot = await getDocs(collection(db, 'fruits'));
     querySnapshot.forEach((doc) => {
       // console.log(doc.id, " => ", doc.data());
-      setFruits(fruits => [...fruits, doc.data()])
+      setFruits((fruits) => [...fruits, doc.data()]);
     });
     // console.log(fruits)
-  }
-
+  };
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({ window }) => {
@@ -131,27 +140,94 @@ export default function HomeScreen({ navigation }) {
               </Text>
             </View>
 
-            <Pressable
-              onPress={() => navigation.navigate('PersonalInformation')}
-            >
-              {/* <MaterialCommunityIcons
-                name={'account-circle-outline'}
-                size={40}
-              /> */}
-              <Image
-                // source={require('../assets/41.jpg')}
-                source={{ uri: currentUser?.image }}
+            <View style={{ alignItems: 'flex-end' }}>
+              <Pressable onPress={() => setIsAvatarFocus(!isAvatarFocus)}>
+                {currentUser?.image ? (
+                  <Image
+                    // source={require('../assets/41.jpg')}
+                    source={{ uri: currentUser?.image }}
+                    style={{
+                      height: 60,
+                      width: 60,
+                      borderRadius: 100,
+                    }}
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name={'account-circle-outline'}
+                    size={60}
+                  />
+                )}
+              </Pressable>
+
+              <View
                 style={{
-                  height: 60,
-                  width: 60,
-                  borderRadius: 100,
+                  position: 'absolute',
+                  display: isAvatarFocus ? 'flex' : 'none',
+                  top: 60,
+                  width: 220,
+                  zIndex: 3,
+
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  shadowColor: 'black',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 5,
                 }}
-              />
-            </Pressable>
+              >
+                <Pressable
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: 20,
+
+                    borderBottomWidth: 2,
+                    borderColor: '#e2e3e5',
+                  }}
+                  onPress={() => {
+                    setIsAvatarFocus(false);
+                    navigation.navigate('PersonalInformation');
+                  }}
+                >
+                  <Fontisto name="person" size={24} color="#ffc107" />
+                  <Text
+                    style={{ fontSize: 16, fontWeight: '600', marginLeft: 16 }}
+                  >
+                    Profile
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: 20,
+                    borderBottomWidth: 2,
+                    borderColor: '#d6d7db',
+                  }}
+                  onPress={() => {
+                    setUser(null);
+                    setIsAvatarFocus(false);
+                    navigation.navigate('Login');
+                  }}
+                >
+                  <Entypo name="log-out" size={24} color="#dc3545" />
+                  <Text
+                    style={{ fontSize: 16, fontWeight: '600', marginLeft: 16 }}
+                  >
+                    Logout
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
 
           <View style={[styles.searchContainer]}>
-            <FontAwesome name="search" size={24} color="black" />
+            <FontAwesome name="search" size={24} color="#3C3C43" />
             <TextInput
               style={styles.inputSearch}
               value={search}
@@ -184,7 +260,7 @@ export default function HomeScreen({ navigation }) {
                         width: (windowWidth - 32 - 80) / 2,
                         height: (windowWidth - 32 - 80) / 2,
                       }}
-                      resizeMode='contain'
+                      resizeMode="contain"
                     />
                     <View
                       style={{
@@ -281,5 +357,30 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingHorizontal: 10,
     borderRadius: 5,
+  },
+
+  // Dropdown
+  dropdown: {
+    margin: 16,
+    height: 50,
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.5,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });

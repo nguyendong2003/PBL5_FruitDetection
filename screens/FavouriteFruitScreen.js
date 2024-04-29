@@ -27,39 +27,47 @@ import { useState, useEffect } from 'react';
 
 import { useAuth } from './AuthContext';
 
-import { getFirestore, collection, getDocs, where, getDoc, onSnapshot, query } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  where,
+  getDoc,
+  onSnapshot,
+  query,
+} from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
 
 export default function FavouriteFruitScreen({ navigation }) {
   const { currentUser } = useAuth();
-  const db = getFirestore(app)
-  const [fruits, setFruits ] = useState([])
-  const [favoriteIds, setFavoriteIds] = useState([])
+  const db = getFirestore(app);
+  const [fruits, setFruits] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState([]);
   useEffect(() => {
-    getFruits()
-    getFavoriteIds()
-  }, [])
-  const getFavoriteIds = async() => {
-    const q = query(collection(db, "users", currentUser.id, "favorite-fruits"))
+    getFruits();
+    getFavoriteIds();
+  }, []);
+  const getFavoriteIds = async () => {
+    const q = query(collection(db, 'users', currentUser.id, 'favorite-fruits'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      setFavoriteIds([])
-      
+      setFavoriteIds([]);
+
       querySnapshot.forEach((doc) => {
-        setFavoriteIds(favoriteIds => [...favoriteIds, doc.data().id_fruit])
+        setFavoriteIds((favoriteIds) => [...favoriteIds, doc.data().id_fruit]);
       });
     });
-  }
+  };
 
-  const getFruits = async() => {
-    setFruits([])
-    const querySnapshot = await getDocs(collection(db, "fruits"));
+  const getFruits = async () => {
+    setFruits([]);
+    const querySnapshot = await getDocs(collection(db, 'fruits'));
     querySnapshot.forEach((doc) => {
       // console.log(doc.id, " => ", doc.data());
-      setFruits(fruits => [...fruits, doc.data()])
+      setFruits((fruits) => [...fruits, doc.data()]);
     });
     // console.log(fruits)
-  }
+  };
   const [search, setSearch] = useState('');
   const [filteredFruitList, setFilteredFruitList] = useState([]);
 
@@ -87,6 +95,19 @@ export default function FavouriteFruitScreen({ navigation }) {
     );
     setFilteredFruitList(filteredList);
   }, [search, fruits, favoriteIds]);
+
+  // Hidden bottom navigation when navigate to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
 
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
@@ -127,6 +148,7 @@ export default function FavouriteFruitScreen({ navigation }) {
               marginBottom: 16,
               alignSelf: 'flex-start',
               minWidth: '100%',
+              maxWidth: '100%',
             }}
             data={filteredFruitList}
             renderItem={({ item }) => {
@@ -137,32 +159,151 @@ export default function FavouriteFruitScreen({ navigation }) {
                   }
                 >
                   <View style={styles.card} key={item.id_fruit}>
-                    <Image
-                      source={{ uri: item.image }}
-                      style={{
-                        width: (windowWidth - 32 - 80) / 2,
-                        height: (windowWidth - 32 - 80) / 2,
-                      }}
-                    />
                     <View
                       style={{
                         flexDirection: 'row',
-                        justifyContent: 'center',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                       }}
                     >
                       <AntDesign
                         name={item.favourite == true ? 'heart' : 'hearto'}
-                        size={20}
+                        size={36}
                         color={item.favourite == true ? 'red' : '#09B44C'}
                       />
                       <Text style={styles.cardText}>{item.name}</Text>
+                      <FontAwesome
+                        style={
+                          {
+                            // backgroundColor: 'green'
+                          }
+                        }
+                        name="trash-o"
+                        size={36}
+                        color="red"
+                        onPress={() => {
+                          console.log(`Click item ${item.id_fruit}`);
+                        }}
+                      />
+                    </View>
+                    <View style={{ flexDirection: 'row', marginTop: 12 }}>
+                      <Image
+                        source={{ uri: item.image }}
+                        style={{
+                          width: (windowWidth - 32 - 80 - 40) / 2,
+                          height: (windowWidth - 32 - 80 - 40) / 2,
+
+                          // width: 120,
+                          // height: 120,
+                        }}
+                      />
+                      <View
+                        style={{
+                          width: (windowWidth - 32 - 80 + 120) / 2,
+                          maxWidth: (windowWidth - 32 - 80 + 120) / 2,
+                          // backgroundColor: 'red',
+                          padding: 8,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                          }}
+                        >
+                          <Text
+                            style={{
+                              flex: 1.5,
+                              fontSize: 12,
+                              color: '#09B44C',
+                              fontWeight: 'bold',
+                              // backgroundColor: 'blue',
+                            }}
+                          >
+                            Origin:
+                          </Text>
+                          <Text
+                            style={{
+                              flex: 3,
+                              fontSize: 12,
+                              color: 'black',
+                              fontWeight: 'bold',
+                              // backgroundColor: 'green',
+                            }}
+                            numberOfLines={2}
+                          >
+                            China, India, Malaysia. China, India, Malaysia
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            marginTop: 8,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              flex: 1.5,
+                              fontSize: 12,
+                              color: '#09B44C',
+                              fontWeight: 'bold',
+                              // backgroundColor: 'blue',
+                            }}
+                          >
+                            Nutrition:
+                          </Text>
+                          <Text
+                            style={{
+                              flex: 3,
+                              fontSize: 12,
+                              color: 'black',
+                              fontWeight: 'bold',
+                              // backgroundColor: 'green',
+                            }}
+                            numberOfLines={2}
+                          >
+                            Vitamin C, Kali, Canxi, Glucozo, Fiber
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            marginTop: 8,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              flex: 1.5,
+                              fontSize: 12,
+                              color: '#09B44C',
+                              fontWeight: 'bold',
+                              // backgroundColor: 'blue',
+                            }}
+                          >
+                            Benefit:
+                          </Text>
+                          <Text
+                            style={{
+                              flex: 3,
+                              fontSize: 12,
+                              color: 'black',
+                              fontWeight: 'bold',
+                              // backgroundColor: 'green',
+                            }}
+                            numberOfLines={3}
+                          >
+                            Plums are high in vitamins C and K, as well as
+                            antioxidants like beta-carotene and anthocyanins.
+                            They may have benefits for heart health, digestion,
+                            and bone health.
+                          </Text>
+                        </View>
+                      </View>
                     </View>
                   </View>
                 </Pressable>
               );
             }}
-            numColumns={2}
+            // numColumns={2}
             keyExtractor={(item, index) => item.id_fruit.toString()}
             ItemSeparatorComponent={<View style={{ height: 4 }}></View>}
             ListEmptyComponent={
@@ -218,7 +359,8 @@ const styles = StyleSheet.create({
   },
   cardText: {
     // marginTop: 8,
-    marginLeft: 8,
+    color: '#09B44C',
+    // marginLeft: 8,
     fontSize: 20,
     textAlign: 'center',
     fontWeight: 'bold',
