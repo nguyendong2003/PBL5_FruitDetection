@@ -67,6 +67,8 @@ export default function DetectScreen({ navigation, route }) {
   const windowWidth = window.width;
   const windowHeight = window.height;
 
+  console.log({ windowWidth, windowHeight });
+
   // image
   const [image, setImage] = useState(null);
 
@@ -192,30 +194,28 @@ export default function DetectScreen({ navigation, route }) {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled" // https://stackoverflow.com/questions/29685421/hide-keyboard-in-react-native
         >
-          <View style={styles.topContainer}>
+          <View style={[styles.topContainer]}>
             {photo ? (
               <Image
                 // source={{ uri: image }}
                 source={{ uri: 'data:image/jpg;base64,' + photo.base64 }}
-                style={{ width: windowWidth, height: windowWidth }}
+                // style={{ width: windowWidth, height: windowWidth }}
+                style={{
+                  width: 300,
+                  height: 300,
+                }}
                 resizeMode="contain"
               />
             ) : image ? (
               <Image
                 source={{ uri: image }}
-                style={{ width: windowWidth, height: windowWidth }}
+                // style={{ width: windowWidth, height: windowWidth }}
+                style={{ width: 300, height: 300 }}
                 resizeMode="contain"
               />
             ) : (
               <Ionicons name="image-outline" size={300} color="black" />
             )}
-            {/* <Ionicons
-              style={{ position: 'absolute', top: 10, left: 10 }}
-              name="chevron-back-circle-sharp"
-              size={48}
-              color="#09B44C"
-              onPress={() => navigation.goBack()}
-            /> */}
           </View>
           <View
             style={{
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',
@@ -274,7 +274,8 @@ const styles = StyleSheet.create({
   topContainer: {
     width: '100%',
     alignItems: 'center',
-    // backgroundColor: 'red',
+    backgroundColor: '#09B44C',
+    padding: 44,
   },
   //
   button: {
@@ -291,5 +292,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  // camera
 });

@@ -23,14 +23,22 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
 import accountList from '../data/account.json';
-import { getFirestore, collection, getDocs, where, getDoc, onSnapshot, query } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  where,
+  getDoc,
+  onSnapshot,
+  query,
+} from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
 
 export default function LoginScreen({ navigation }) {
   const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -49,7 +57,7 @@ export default function LoginScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setUsername('');
+      setEmail('');
       setPassword('');
       setShowPassword(false);
       setErrors({});
@@ -68,12 +76,12 @@ export default function LoginScreen({ navigation }) {
     setShowPassword(!showPassword);
   };
 
-  const handleRegister =async () => {
+  const handleRegister = async () => {
     let newErrors = {};
 
-    // Kiểm tra username
-    if (!username) {
-      newErrors['usernameError'] = 'Username cannot be empty';
+    // Kiểm tra email
+    if (!email) {
+      newErrors['emailError'] = 'Email address cannot be empty';
     }
 
     // Kiểm tra mật khẩu
@@ -89,13 +97,17 @@ export default function LoginScreen({ navigation }) {
       setErrors({});
 
       try {
-        const userRef = collection(db, "users");
-        const q = query(userRef, where("email", "==", username), where("password", "==", password));
+        const userRef = collection(db, 'users');
+        const q = query(
+          userRef,
+          where('email', '==', email),
+          where('password', '==', password)
+        );
         const querySnapshot = await getDocs(q);
-  
+
         if (querySnapshot.empty) {
-          // Không tìm thấy user với username và password tương ứng
-          Alert.alert('Invalid credentials', 'Username or password is incorrect');
+          // Không tìm thấy user với email và password tương ứng
+          Alert.alert('Invalid credentials', 'Email or password is incorrect');
         } else {
           const unsubscribe = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -107,7 +119,7 @@ export default function LoginScreen({ navigation }) {
           });
         }
       } catch (error) {
-        console.error("Error getting documents: ", error);
+        console.error('Error getting documents: ', error);
         // Xử lý lỗi ở đây nếu có
       }
     }
@@ -133,22 +145,22 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.form}>
             <Text style={styles.textTitle}>Login</Text>
 
-            <Text style={styles.labelForm}>Username</Text>
+            <Text style={styles.labelForm}>Email address</Text>
             <TextInput
-              style={styles.inputUsername}
-              value={username}
-              //   onChangeText={setUsername}
+              style={styles.inputEmail}
+              value={email}
+              //   onChangeText={setEmail}
               onChangeText={(text) => {
-                setUsername(text);
+                setEmail(text);
                 // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['usernameError']) {
-                  setErrors({ ...errors, usernameError: null });
+                if (errors['emailError']) {
+                  setErrors({ ...errors, emailError: null });
                 }
               }}
-              placeholder="Enter your username"
+              placeholder="Enter your email address"
             />
-            {errors['usernameError'] ? (
-              <Text style={styles.errorText}>{errors['usernameError']}</Text>
+            {errors['emailError'] ? (
+              <Text style={styles.errorText}>{errors['emailError']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>Password</Text>
@@ -252,7 +264,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
   },
-  inputUsername: {
+  inputEmail: {
     height: 40,
     borderColor: '#ddd',
     borderWidth: 1,

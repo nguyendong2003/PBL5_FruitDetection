@@ -77,11 +77,6 @@ export default function SettingScreen({ navigation, route }) {
               }}
             >
               {/* <View>
-                <Ionicons
-                  name="person-circle-outline"
-                  size={200}
-                  color="white"
-                />
                 <Text
                   style={{ textAlign: 'center', color: 'white', fontSize: 24 }}
                 >
@@ -89,16 +84,25 @@ export default function SettingScreen({ navigation, route }) {
                 </Text>
               </View> */}
               <View>
-                <Image
-                  // source={require('../assets/41.jpg')}
-                  source={{ uri: currentUser?.image }}
-                  style={{
-                    height: 200,
-                    width: 200,
-                    margin: 10,
-                    borderRadius: 100,
-                  }}
-                />
+                {currentUser?.image ? (
+                  <Image
+                    // source={require('../assets/41.jpg')}
+                    source={{ uri: currentUser?.image }}
+                    style={{
+                      height: 200,
+                      width: 200,
+                      margin: 10,
+                      borderRadius: 100,
+                    }}
+                  />
+                ) : (
+                  <Ionicons
+                    name="person-circle-outline"
+                    size={200}
+                    color="white"
+                  />
+                )}
+
                 <Text
                   style={{
                     textAlign: 'center',
@@ -106,7 +110,6 @@ export default function SettingScreen({ navigation, route }) {
                     fontSize: 24,
                   }}
                 >
-                  {/* nhathung2207 */}
                   {currentUser?.fullname}
                 </Text>
               </View>

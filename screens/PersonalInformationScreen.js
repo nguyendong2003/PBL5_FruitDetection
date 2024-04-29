@@ -26,6 +26,7 @@ import {
 import { useState, useEffect } from 'react';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { RadioButton } from 'react-native-paper';
 
 import { useAuth } from './AuthContext';
 
@@ -36,16 +37,18 @@ export default function PersonalInformationScreen({ navigation }) {
   //
   const { currentUser, setUser } = useAuth();
   //
-  const [displayName, setDisplayName] = useState(currentUser?.fullname);
+  const [fullName, setfullName] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
   const [phoneNumber, setPhoneNumber] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
-
+  //
+  const [gender, setGender] = useState(currentUser?.gender);
+  //
   const [errors, setErrors] = useState({});
 
   // pick date
   const [dateOfBirth, setDateOfBirth] = useState(
-    new Date(Date.parse(currentUser?.date_of_birth))
+    new Date(Date.parse(currentUser?.dateofbirth))
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -69,7 +72,7 @@ export default function PersonalInformationScreen({ navigation }) {
   const [image, setImage] = useState(currentUser?.image);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+    // no permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -96,6 +99,19 @@ export default function PersonalInformationScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
+  // Hidden bottom navigation when navigate to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
+
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
   //     // Reset state when screen gets focused again
@@ -118,12 +134,12 @@ export default function PersonalInformationScreen({ navigation }) {
   const handleUpdateProfile = () => {
     let newErrors = {};
 
-    if (!displayName) {
-      newErrors['displayNameEmptyError'] = 'Display name cannot be empty';
+    if (!fullName) {
+      newErrors['fullNameEmptyError'] = 'Full name cannot be empty';
     }
 
     if (!email) {
-      newErrors['emailEmptyError'] = 'Email cannot be empty';
+      newErrors['emailEmptyError'] = 'Email address cannot be empty';
     }
 
     if (!phoneNumber) {
@@ -172,33 +188,25 @@ export default function PersonalInformationScreen({ navigation }) {
                 alignItems: 'center',
               }}
             >
-              {/* <View>
-                <Ionicons
-                  name="person-circle-outline"
-                  size={200}
-                  color="#09B44C"
-                />
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: '#09B44C',
-                    fontSize: 24,
-                    fontWeight: 'bold',
-                  }}
-                >
-                  nhathung2207
-                </Text>
-              </View> */}
               <View>
-                <Image
-                  source={{ uri: image }}
-                  style={{
-                    height: 200,
-                    width: 200,
-                    margin: 10,
-                    borderRadius: 100,
-                  }}
-                />
+                {image ? (
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      height: 200,
+                      width: 200,
+                      margin: 10,
+                      borderRadius: 100,
+                    }}
+                  />
+                ) : (
+                  <Ionicons
+                    name="person-circle-outline"
+                    size={200}
+                    color="#09B44C"
+                  />
+                )}
+
                 <Pressable
                   style={{ position: 'absolute', top: 190, left: 190 }}
                   onPress={pickImage}
@@ -214,34 +222,34 @@ export default function PersonalInformationScreen({ navigation }) {
                     fontWeight: 'bold',
                   }}
                 >
-                  {currentUser.display_name}
+                  {currentUser.fullName}
                 </Text> */}
               </View>
             </View>
           </View>
           <View style={styles.form}>
-            <Text style={styles.labelForm}>Display name</Text>
+            <Text style={styles.labelForm}>Full name</Text>
             <TextInput
               style={styles.inputField}
-              value={displayName}
+              value={fullName}
               //   onChangeText={setUsername}
               onChangeText={(text) => {
-                setDisplayName(text);
+                setfullName(text);
                 // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['displayNameEmptyError']) {
-                  setErrors({ ...errors, displayNameEmptyError: null });
+                if (errors['fullNameEmptyError']) {
+                  setErrors({ ...errors, fullNameEmptyError: null });
                 }
               }}
-              placeholder="Enter your display name"
+              placeholder="Enter your full name"
             />
 
-            {errors['displayNameEmptyError'] ? (
+            {errors['fullNameEmptyError'] ? (
               <Text style={styles.errorText}>
-                {errors['displayNameEmptyError']}
+                {errors['fullNameEmptyError']}
               </Text>
             ) : null}
 
-            <Text style={styles.labelForm}>Email</Text>
+            <Text style={styles.labelForm}>Email address</Text>
             <TextInput
               style={styles.inputField}
               value={email}
@@ -252,7 +260,7 @@ export default function PersonalInformationScreen({ navigation }) {
                   setErrors({ ...errors, emailEmptyError: null });
                 }
               }}
-              placeholder="Enter your email"
+              placeholder="Enter your email address"
             />
 
             {errors['emailEmptyError'] ? (
@@ -301,7 +309,7 @@ export default function PersonalInformationScreen({ navigation }) {
                     value={dateOfBirth || new Date()}
                     mode={'date'}
                     is24Hour={true}
-                    display="default"
+                    full="default"
                     onChange={onChangeDateOfBirth}
                   />
                 )}
@@ -311,6 +319,39 @@ export default function PersonalInformationScreen({ navigation }) {
             {/* {errors['currentPassword'] ? (
               <Text style={styles.errorText}>{errors['currentPassword']}</Text>
             ) : null} */}
+
+            <Text style={styles.labelForm}>Gender</Text>
+            <View style={styles.radioGroup}>
+              <View style={styles.radioButton}>
+                <RadioButton
+                  value="male"
+                  status={gender === 'male' ? 'checked' : 'unchecked'}
+                  onPress={() => setGender('male')}
+                  color="#007BFF"
+                />
+                <Text style={styles.radioLabel}>Male</Text>
+              </View>
+
+              <View style={styles.radioButton}>
+                <RadioButton
+                  value="female"
+                  status={gender === 'female' ? 'checked' : 'unchecked'}
+                  onPress={() => setGender('female')}
+                  color="#007BFF"
+                />
+                <Text style={styles.radioLabel}>Female</Text>
+              </View>
+
+              <View style={styles.radioButton}>
+                <RadioButton
+                  value="no"
+                  status={gender === 'no' ? 'checked' : 'unchecked'}
+                  onPress={() => setGender('no')}
+                  color="#007BFF"
+                />
+                <Text style={styles.radioLabel}>No</Text>
+              </View>
+            </View>
 
             <Text style={styles.labelForm}>Address</Text>
             <TextInput
@@ -460,5 +501,32 @@ const styles = StyleSheet.create({
   errorText: {
     marginTop: 8,
     color: 'red',
+  },
+  // radio button
+  radioGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    // marginTop: 20,
+    // borderRadius: 8,
+    backgroundColor: 'white',
+    // padding: 16,
+    // elevation: 4,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+  },
+  radioButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radioLabel: {
+    // marginLeft: 4,
+    fontSize: 16,
+    color: '#333',
   },
 });

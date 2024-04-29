@@ -122,7 +122,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -151,7 +151,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -180,7 +180,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -209,7 +209,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -238,7 +238,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
