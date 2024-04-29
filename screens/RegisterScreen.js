@@ -19,9 +19,14 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
-
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
+import { app } from '../firebaseConfig';
 export default function RegisterScreen({ navigation }) {
-  const [username, setUsername] = useState('');
+
+  const db = getFirestore(app)
+  const [email, setEmail] = useState('');
+  const [fullname, setFullname] = useState('');
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -32,7 +37,8 @@ export default function RegisterScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setUsername('');
+      setEmail('');
+      setFullname('');
       setPassword('');
       setConfirmPassword('');
       setShowPassword(false);
@@ -53,10 +59,13 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = () => {
     let newErrors = {};
 
-    // Kiểm tra username
-    if (!username) {
-      newErrors['usernameError'] = 'Username cannot be empty';
+    if (!email) {
+      newErrors['emailError'] = 'Email cannot be empty';
     }
+
+    // Kiểm tra username
+    if (!fullname) {
+      newErrors['fullnameError'] = 'Fullname cannot be empty';
 
     // Kiểm tra mật khẩu
     if (!password) {
@@ -77,12 +86,24 @@ export default function RegisterScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
+      addUser();
       alert('Register successfully');
       navigation.navigate('Login');
-      // Your registration logic here
-      // For example: navigation.navigate('Home');
     }
-  };
+  }}
+
+  const addUser = async() => {
+    const docRef = await addDoc(collection(db, "users"), {
+      email: email,
+      fullname: fullname,
+      password: password
+    });
+    
+    console.log("Document written with ID: ", docRef.id);
+    await updateDoc(doc(db, "users", docRef.id), {
+      id: docRef.id
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -104,22 +125,41 @@ export default function RegisterScreen({ navigation }) {
           <View style={styles.form}>
             <Text style={styles.textTitle}>Create an account</Text>
 
-            <Text style={styles.labelForm}>Username</Text>
+
+            <Text style={styles.labelForm}>Email address</Text>
             <TextInput
-              style={styles.inputUsername}
-              value={username}
-              //   onChangeText={setUsername}
+              style={styles.inputEmail}
+              value={email}
+              //   onChangeText={setEmail}
               onChangeText={(text) => {
-                setUsername(text);
+                setEmail(text);
                 // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['usernameError']) {
-                  setErrors({ ...errors, usernameError: null });
+                if (errors['emailError']) {
+                  setErrors({ ...errors, emailError: null });
                 }
               }}
-              placeholder="Enter your username"
+              placeholder="Enter your email address"
             />
-            {errors['usernameError'] ? (
-              <Text style={styles.errorText}>{errors['usernameError']}</Text>
+            {errors['emailError'] ? (
+              <Text style={styles.errorText}>{errors['emailError']}</Text>
+            ) : null}
+
+            <Text style={styles.labelForm}>Full name</Text>
+            <TextInput
+              style={styles.inputEmail}
+              value={fullname}
+              //   onChangeText={setEmail}
+              onChangeText={(text) => {
+                setFullname(text);
+                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
+                if (errors['fullnameError']) {
+                  setErrors({ ...errors, fullnameError: null });
+                }
+              }}
+              placeholder="Enter your full name"
+            />
+            {errors['fullnameError'] ? (
+              <Text style={styles.errorText}>{errors['fullnameError']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>Password</Text>
@@ -219,7 +259,6 @@ export default function RegisterScreen({ navigation }) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -243,13 +282,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   form: {
     maxWidth: '100%',
     minWidth: '100%',
     backgroundColor: 'white',
     padding: 20,
+    paddingTop: 4,
     // borderRadius: 10,
     // shadowColor: 'black',
     // shadowOffset: {
@@ -266,7 +306,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
   },
-  inputUsername: {
+  inputEmail: {
     height: 40,
     borderColor: '#ddd',
     borderWidth: 1,

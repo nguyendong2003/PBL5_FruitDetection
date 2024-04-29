@@ -2,13 +2,14 @@
     {
         "id": 1,
         "username": "dong",
-        "password": "dong123",
-        "email": "dong123@gmail.com",
-        "image": "https://file3.qdnd.vn/data/images/0/2023/03/29/tranthaiphuong/messi-29323m.jpg?dpi=150&quality=100&w=870",
+        "password": "1",
+        "email": "1",
+        "image": "",
         "phone": "0966535573",
-        "display_name": "Nguyễn Đông",
+        "fullName": "Nguyễn Đông",
         "address": "Đà Nẵng",
-        "date_of_birth": "1990-05-15"
+        "dateOfBirth": "1990-05-15",
+        "gender": "male"
     },
     {
         "id": 2,
@@ -17,9 +18,10 @@
         "email": "hung123@gmail.com",
         "image": "https://vtv1.mediacdn.vn/zoom/640_400/2022/12/9/photo-1-16705558997871835381431-crop-1670555912188795621879.jpg",
         "phone": "0987822857",
-        "display_name": "Trần Ngọc Nhật Hưng",
+        "fullName": "Trần Ngọc Nhật Hưng",
         "address": "Hà Nội",
-        "date_of_birth": "1987-10-25"
+        "dateOfBirth": "1987-10-25",
+        "gender": "female"
     },
     {
         "id": 3,
@@ -28,8 +30,9 @@
         "email": "dat123@gmail.com",
         "image": "https://cdn.tuoitre.vn/thumb_w/600/471584752817336320/2023/2/14/thoi-the-thay-doi-mbappe-ra-dieu-kien-cuc-kho-de-o-lai-psg-236322-2045-1676347173240951828485.jpg",
         "phone": "0972323289",
-        "display_name": "Trần Văn Đạt",
+        "fullName": "Trần Văn Đạt",
         "address": "Hải Phòng",
-        "date_of_birth": "1995-12-03"
+        "dateOfBirth": "1995-12-03",
+        "gender": "no"
     }
 ]

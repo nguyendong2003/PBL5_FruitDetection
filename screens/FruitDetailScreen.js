@@ -26,11 +26,20 @@ import {
 
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getFirestore, collection, addDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  where,
+  doc,
+  query,
+  getDocs,
+} from 'firebase/firestore';
 import { app } from '../firebaseConfig';
 //
 export default function FruitDetailScreen({ navigation, route }) {
-  const db = getFirestore(app)
+  const db = getFirestore(app);
   const { currentUser } = useAuth();
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -47,46 +56,65 @@ export default function FruitDetailScreen({ navigation, route }) {
   const windowWidth = window.width;
   const windowHeight = window.height;
 
+  // Hidden bottom navigation when navigate to this screen
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
+
   //
   const { fruit } = route.params;
 
   //
   const [isFavourite, setIsFavourite] = useState(fruit.favourite); // Trạng thái của trái tim
-  const toggleFavourite =() => {
+  const toggleFavourite = () => {
     // setIsFavourite(!isFavourite);
     setIsFavourite((isFavourite) => {
       isFavourite = !isFavourite;
       // console.log(fruit.id)
-      if(isFavourite) {
-        addFavourite()
+      if (isFavourite) {
+        addFavourite();
       } else {
-        deleteFavourite()
+        deleteFavourite();
       }
 
-      return isFavourite
+      return isFavourite;
     }); // Đảo ngược trạng thái khi nút được nhấn
   };
 
-  const addFavourite = async() => {
-    const docRef = await addDoc(collection(db, "users", currentUser.id, "favorite-fruits"), {
-      id_fruit: fruit.id_fruit
-    });
+  const addFavourite = async () => {
+    const docRef = await addDoc(
+      collection(db, 'users', currentUser.id, 'favorite-fruits'),
+      {
+        id_fruit: fruit.id_fruit,
+      }
+    );
     // console.log("Document written with ID: ", docRef.id);
-  }
+  };
 
-  const deleteFavourite = async() => {
+  const deleteFavourite = async () => {
     try {
-      const q = query(collection(db, "users", currentUser.id, "favorite-fruits"), where("id_fruit", "==", fruit.id_fruit));
+      const q = query(
+        collection(db, 'users', currentUser.id, 'favorite-fruits'),
+        where('id_fruit', '==', fruit.id_fruit)
+      );
       const querySnapshot = await getDocs(q);
-  
+
       querySnapshot.forEach(async (doc) => {
         await deleteDoc(doc.ref);
-      });      
+      });
       // console.log("Document deleted from favorites!");
     } catch (error) {
-      console.error("Error deleting document from favorites: ", error);
+      console.error('Error deleting document from favorites: ', error);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -166,7 +194,7 @@ export default function FruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -195,7 +223,7 @@ export default function FruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -224,7 +252,7 @@ export default function FruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -253,7 +281,7 @@ export default function FruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',
@@ -282,7 +310,7 @@ export default function FruitDetailScreen({ navigation, route }) {
               >
                 <Text
                   style={{
-                    flex: 1,
+                    flex: 1.5,
                     fontSize: 16,
                     color: '#09B44C',
                     fontWeight: '600',

@@ -20,6 +20,7 @@
     "firebase": "^10.11.1",
     "react": "18.2.0",
     "react-native": "0.73.6",
+    "react-native-element-dropdown": "^2.10.4",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-image-picker": "^7.1.2",
     "react-native-modal-datetime-picker": "^17.1.0",
