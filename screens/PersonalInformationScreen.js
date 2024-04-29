@@ -29,31 +29,42 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useAuth } from './AuthContext';
 
+import { getFirestore, collection, setDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
+import {getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { app } from '../firebaseConfig';
 // Upload image
+import * as FileSystem from "expo-file-system"
 import * as ImagePicker from 'expo-image-picker';
 
 export default function PersonalInformationScreen({ navigation }) {
-  //
+  const db = getFirestore(app)
   const { currentUser, setUser } = useAuth();
+  let updatedUser = currentUser
+  // const {updatedUser, setUpdatedUser} = useState({})
   //
-  const [displayName, setDisplayName] = useState(currentUser?.fullname);
+  const [fullname, setFullname] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
-  const [phoneNumber, setPhoneNumber] = useState(currentUser?.phone);
+  const [phone, setPhone] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
-
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
 
   // pick date
   const [dateOfBirth, setDateOfBirth] = useState(
-    new Date(Date.parse(currentUser?.date_of_birth))
+    new Date(Date.parse(currentUser?.dateofbirth))
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const onChangeDateOfBirth = (event, selectedDate) => {
     setShowDatePicker(false); // Ẩn DateTimePicker sau khi chọn hoặc hủy bỏ
     if (event.type === 'set' && selectedDate) {
+      // console.log(selectedDate.toISOString().split("T")[0])
       // Nếu người dùng chọn ngày và nhấn OK
-      setDateOfBirth(selectedDate); // Cập nhật ngày sinh mới
+      setDateOfBirth(selectedDate); 
+      if(Object.keys(updatedUser).includes("dateofbirth")) {
+        updatedUser.dateofbirth = selectedDate.toISOString().split("T")[0];
+      } else {
+        updatedUser = {...updatedUser, dateofbirth: selectedDate.toISOString().split("T")[0]};
+      }
     }
   };
 
@@ -83,7 +94,8 @@ export default function PersonalInformationScreen({ navigation }) {
       setImage(result.assets[0].uri);
     }
   };
-  //
+
+
 
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -96,55 +108,76 @@ export default function PersonalInformationScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // Reset state when screen gets focused again
-  //     setCurrentPassword('');
-  //     setNewPassword('');
-  //     setConfirmNewPassword('');
-  //     setShowCurrentPassword(false);
-  //     setShowNewPassword(false);
-  //     setShowConfirmNewPassword(false);
-  //     setErrors({});
-  //   });
-
-  //   return unsubscribe;
-  // }, [navigation]);
-
   const { window } = dimensions;
   const windowWidth = window.width;
   const windowHeight = window.height;
 
-  const handleUpdateProfile = () => {
-    let newErrors = {};
+  const storage = getStorage()
+  const [upLoading, setUpLoading] = useState(false)
+  const uploadMedia = async() => {
+    if(image) {
+      setUpLoading(true)
+      try {
+        const {uri} = await FileSystem.getInfoAsync(image);
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = () => {
+                resolve(xhr.response)
+            }
+            xhr.onerror = (e) => {
+                reject(new TypeError('Network request failed'))
+            }
+            xhr.responseType = 'blob'
+            xhr.open('GET', uri, true)
+            xhr.send(null)
+        })
 
-    if (!displayName) {
-      newErrors['displayNameEmptyError'] = 'Display name cannot be empty';
-    }
+        const fileName = image.substring(image.lastIndexOf('/') + 1)
+        const refStorage = ref(storage, "users/" + fileName)
+        await uploadBytes(refStorage, blob).then((snapshot) => {
+            // console.log(snapshot);
+        });
 
-    if (!email) {
-      newErrors['emailEmptyError'] = 'Email cannot be empty';
+        await getDownloadURL(refStorage)
+        .then((image) => {
+            const xhr = new XMLHttpRequest();
+            xhr.responseType = 'blob';
+            xhr.onload = (event) => {
+                const blob = xhr.response;
+            };
+            xhr.open('GET', image);
+            xhr.send();
+            // console.log(image)
+            if(Object.keys(updatedUser).includes(image)) {
+              updatedUser.image = image;
+            } else {
+              updatedUser = {...updatedUser, image};
+            }
+            // console.log(updatedUser)
+        })
+        .catch((error) => {
+            // Handle any errors
+        });
+        setUpLoading(false);
+    } catch(error) {
+        console.log(error)
+        setUpLoading(false)
     }
+    }
+    
+  }
 
-    if (!phoneNumber) {
-      newErrors['phoneNumberEmptyError'] = 'Phone nunber cannot be empty';
-    }
-
-    if (!address) {
-      newErrors['addressEmptyError'] = 'Address cannot be empty';
-    }
-
-    // Nếu có lỗi, hiển thị chúng
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-    } else {
-      // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
-      setErrors({});
-      alert('Update profile successfully');
-      navigation.navigate('Setting');
-    }
+  const handleUpdateProfile = async() => {
+    await uploadMedia()
+    // console.log(updatedUser)
+    await updateProfile()
+    alert('Update profile successfully');
+    // navigation.navigate('Setting');
   };
 
+  const updateProfile = async () => {
+    await setDoc(doc(db, "users", currentUser.id), updatedUser);
+  }
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -220,68 +253,58 @@ export default function PersonalInformationScreen({ navigation }) {
             </View>
           </View>
           <View style={styles.form}>
-            <Text style={styles.labelForm}>Display name</Text>
+            <Text style={styles.labelForm}>Fullname</Text>
             <TextInput
               style={styles.inputField}
-              value={displayName}
+              value={fullname}
               //   onChangeText={setUsername}
               onChangeText={(text) => {
-                setDisplayName(text);
-                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['displayNameEmptyError']) {
-                  setErrors({ ...errors, displayNameEmptyError: null });
-                }
+                setFullname((fullname) => {
+                  fullname = text;
+                  if(Object.keys(updatedUser).includes(fullname)) {
+                    updatedUser.fullname = fullname;
+                  } else {
+                    updatedUser = {...updatedUser, fullname}
+                  }
+                });
               }}
-              placeholder="Enter your display name"
+              placeholder="Enter your fullname"
             />
-
-            {errors['displayNameEmptyError'] ? (
-              <Text style={styles.errorText}>
-                {errors['displayNameEmptyError']}
-              </Text>
-            ) : null}
 
             <Text style={styles.labelForm}>Email</Text>
             <TextInput
               style={styles.inputField}
               value={email}
               onChangeText={(text) => {
-                setEmail(text);
-                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['emailEmptyError']) {
-                  setErrors({ ...errors, emailEmptyError: null });
-                }
+                setEmail((email) => {
+                  email = text;
+                  if(Object.keys(updatedUser).includes(email)) {
+                    updatedUser.email = email;
+                  } else {
+                    updatedUser = {...updatedUser, email}
+                  }
+                });
               }}
               placeholder="Enter your email"
             />
 
-            {errors['emailEmptyError'] ? (
-              <Text style={styles.errorText}>{errors['emailEmptyError']}</Text>
-            ) : null}
-
             <Text style={styles.labelForm}>Phone number</Text>
             <TextInput
               style={styles.inputField}
-              value={phoneNumber}
+              value={phone}
               keyboardType="numeric"
               onChangeText={(text) => {
-                setPhoneNumber(text);
-                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['phoneNumberEmptyError']) {
-                  setErrors({
-                    ...errors,
-                    phoneNumberEmptyError: null,
-                  });
-                }
+                setPhone((phone) => {
+                  phone = text;
+                  if(Object.keys(updatedUser).includes(phone)) {
+                    updatedUser.phone = phone;
+                  } else {
+                    updatedUser = {...updatedUser, phone}
+                  }
+                });
               }}
               placeholder="Enter your phone number"
             />
-
-            {errors['phoneNumberEmptyError'] ? (
-              <Text style={styles.errorText}>
-                {errors['phoneNumberEmptyError']}
-              </Text>
-            ) : null}
 
             <Text style={styles.labelForm}>Date of birth</Text>
             <Pressable onPress={toggleDatePicker}>
@@ -308,30 +331,22 @@ export default function PersonalInformationScreen({ navigation }) {
               </View>
             </Pressable>
 
-            {/* {errors['currentPassword'] ? (
-              <Text style={styles.errorText}>{errors['currentPassword']}</Text>
-            ) : null} */}
-
             <Text style={styles.labelForm}>Address</Text>
             <TextInput
               style={styles.inputField}
               value={address}
-              //   onChangeText={setUsername}
               onChangeText={(text) => {
-                setAddress(text);
-                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['addressEmptyError']) {
-                  setErrors({ ...errors, addressEmptyError: null });
-                }
+                setAddress((address) => {
+                  address = text;
+                  if(Object.keys(updatedUser).includes(address)) {
+                    updatedUser.address = address;
+                  } else {
+                    updatedUser = {...updatedUser, address}
+                  }
+                });
               }}
               placeholder="Enter your address"
             />
-
-            {errors['addressEmptyError'] ? (
-              <Text style={styles.errorText}>
-                {errors['addressEmptyError']}
-              </Text>
-            ) : null}
 
             <Pressable
               style={styles.button}
