@@ -90,7 +90,7 @@ export default function RegisterScreen({ navigation }) {
       alert('Register successfully');
       navigation.navigate('Login');
     }
-  };
+  }}
 
   const addUser = async() => {
     const docRef = await addDoc(collection(db, "users"), {
@@ -258,8 +258,7 @@ export default function RegisterScreen({ navigation }) {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}}
-
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
