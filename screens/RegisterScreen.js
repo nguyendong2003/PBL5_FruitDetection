@@ -19,9 +19,12 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
-
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
+import { app } from '../firebaseConfig';
 export default function RegisterScreen({ navigation }) {
-  const [username, setUsername] = useState('');
+  const db = getFirestore(app)
+  const [email, setEmail] = useState('');
+  const [fullname, setFullname] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -32,7 +35,7 @@ export default function RegisterScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setUsername('');
+      setFullname('');
       setPassword('');
       setConfirmPassword('');
       setShowPassword(false);
@@ -53,9 +56,13 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = () => {
     let newErrors = {};
 
+    if (!email) {
+      newErrors['emailError'] = 'Email cannot be empty';
+    }
+
     // Kiểm tra username
-    if (!username) {
-      newErrors['usernameError'] = 'Username cannot be empty';
+    if (!fullname) {
+      newErrors['fullnameError'] = 'Fullname cannot be empty';
     }
 
     // Kiểm tra mật khẩu
@@ -77,12 +84,26 @@ export default function RegisterScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
+      addUser();
       alert('Register successfully');
       navigation.navigate('Login');
       // Your registration logic here
       // For example: navigation.navigate('Home');
     }
   };
+
+  const addUser = async() => {
+    const docRef = await addDoc(collection(db, "users"), {
+      email: email,
+      fullname: fullname,
+      password: password
+    });
+    
+    console.log("Document written with ID: ", docRef.id);
+    await updateDoc(doc(db, "users", docRef.id), {
+      id: docRef.id
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -104,22 +125,40 @@ export default function RegisterScreen({ navigation }) {
           <View style={styles.form}>
             <Text style={styles.textTitle}>Create an account</Text>
 
-            <Text style={styles.labelForm}>Username</Text>
+            <Text style={styles.labelForm}>Email</Text>
             <TextInput
               style={styles.inputUsername}
-              value={username}
+              value={email}
               //   onChangeText={setUsername}
               onChangeText={(text) => {
-                setUsername(text);
+                setEmail(text);
                 // Xóa thông báo lỗi khi người dùng thay đổi nội dung
-                if (errors['usernameError']) {
-                  setErrors({ ...errors, usernameError: null });
+                if (errors['emailError']) {
+                  setErrors({ ...errors, emailError: null });
                 }
               }}
-              placeholder="Enter your username"
+              placeholder="Enter your email"
             />
-            {errors['usernameError'] ? (
-              <Text style={styles.errorText}>{errors['usernameError']}</Text>
+            {errors['emailError'] ? (
+              <Text style={styles.errorText}>{errors['emailError']}</Text>
+            ) : null}
+
+<           Text style={styles.labelForm}>Fullname</Text>
+            <TextInput
+              style={styles.inputUsername}
+              value={fullname}
+              //   onChangeText={setUsername}
+              onChangeText={(text) => {
+                setFullname(text);
+                // Xóa thông báo lỗi khi người dùng thay đổi nội dung
+                if (errors['fullnameError']) {
+                  setErrors({ ...errors, fullnameError: null });
+                }
+              }}
+              placeholder="Enter your fullname"
+            />
+            {errors['fullnameError'] ? (
+              <Text style={styles.errorText}>{errors['fullnameError']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>Password</Text>

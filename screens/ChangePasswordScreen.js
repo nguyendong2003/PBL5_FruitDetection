@@ -17,10 +17,14 @@ import {
 } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import { useAuth } from './AuthContext';
 import { useState, useEffect } from 'react';
 
+import { getFirestore, updateDoc, doc } from "firebase/firestore"; 
+import { app } from '../firebaseConfig';
 export default function ChangePasswordScreen({ navigation }) {
+  const { currentUser } = useAuth();
+  const db = getFirestore(app)
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -106,10 +110,20 @@ export default function ChangePasswordScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
+      updatePassword();
       alert('Change password successfully');
-      navigation.navigate('Login');
+      // console.log(currentUser.password)
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmNewPassword('')
     }
   };
+
+  const updatePassword = async() => {
+    await updateDoc(doc(db, "users", currentUser.id), {
+      password: newPassword
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
