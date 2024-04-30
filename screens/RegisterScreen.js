@@ -57,6 +57,7 @@ export default function RegisterScreen({ navigation }) {
   };
 
   const handleRegister = () => {
+    // console.log("ok")
     let newErrors = {};
 
     if (!email) {
@@ -66,31 +67,37 @@ export default function RegisterScreen({ navigation }) {
     // Kiểm tra username
     if (!fullname) {
       newErrors['fullnameError'] = 'Fullname cannot be empty';
+    }
 
     // Kiểm tra mật khẩu
     if (!password) {
       newErrors['passwordEmptyError'] = 'Password cannot be empty';
     }
+    
     if (!confirmPassword) {
       newErrors['confirmPasswordEmptyError'] =
         'Confirm Password cannot be empty';
     }
+
     if (password && confirmPassword && password !== confirmPassword) {
       newErrors['passwordMismatchError'] =
         'Password and Confirm Password do not match';
     }
-
+    // console.log(newErrors);
     // Nếu có lỗi, hiển thị chúng
     if (Object.keys(newErrors).length > 0) {
+        
+        // console.log("fail")
       setErrors(newErrors);
     } else {
+        // console.log("oke")
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
       addUser();
       alert('Register successfully');
       navigation.navigate('Login');
     }
-  }}
+  }
 
   const addUser = async() => {
     const docRef = await addDoc(collection(db, "users"), {

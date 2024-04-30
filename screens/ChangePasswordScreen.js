@@ -95,8 +95,14 @@ export default function ChangePasswordScreen({ navigation }) {
   const handleChangePassword = () => {
     let newErrors = {};
 
+    
     if (!currentPassword) {
       newErrors['currentPassword'] = 'Current password cannot be empty';
+    } 
+
+    if(currentPassword && currentPassword !== currentUser.password) {
+      console.log(currentUser.password)
+      newErrors['currentPasswordNotCorrect'] = 'Current password not correct';
     }
 
     if (!newPassword) {
@@ -161,8 +167,12 @@ export default function ChangePasswordScreen({ navigation }) {
                 onChangeText={(text) => {
                   setCurrentPassword(text);
                   // Xóa thông báo lỗi khi người dùng thay đổi nội dung
+                  
                   if (errors['currentPassword']) {
                     setErrors({ ...errors, currentPassword: null });
+                  }
+                  if (errors['currentPasswordNotCorrect']) {
+                    setErrors({ ...errors, currentPasswordNotCorrect: null });
                   }
                 }}
                 placeholder="Enter your current password"
@@ -178,6 +188,10 @@ export default function ChangePasswordScreen({ navigation }) {
 
             {errors['currentPassword'] ? (
               <Text style={styles.errorText}>{errors['currentPassword']}</Text>
+            ) : null}
+
+            {errors['currentPasswordNotCorrect'] ? (
+              <Text style={styles.errorText}>{errors['currentPasswordNotCorrect']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>New Password</Text>
