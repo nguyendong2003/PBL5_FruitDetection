@@ -30,7 +30,7 @@ import { RadioButton } from 'react-native-paper';
 
 import { useAuth } from './AuthContext';
 
-import { getFirestore, collection, setDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
+import { getFirestore, collection, setDoc, deleteDoc, where, doc ,query, getDocs, updateDoc } from "firebase/firestore"; 
 import {getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { app } from '../firebaseConfig';
 // Upload image
@@ -40,32 +40,28 @@ import * as ImagePicker from 'expo-image-picker';
 export default function PersonalInformationScreen({ navigation }) {
   const db = getFirestore(app)
   const { currentUser, setUser } = useAuth();
-  let updatedUser = currentUser
-  // const {updatedUser, setUpdatedUser} = useState({})
-  //
+
+  const [updatedUser, setUpdatedUser] = useState(currentUser);
+  
   const [fullname, setFullname] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
   const [phone, setPhone] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
-  const [gender, setGender] = useState(currentUser?.gender);
+  const [gender, setGender] = useState((currentUser?.gender == undefined) ? 'no' : currentUser?.gender);
 
   // pick date
-  const [dateOfBirth, setDateOfBirth] = useState(
+  const [dateofbirth, setDateofbirth] = useState(
     new Date(Date.parse(currentUser?.dateofbirth))
   );
+
+  // console.log(dateofbirth)
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const onChangeDateOfBirth = (event, selectedDate) => {
     setShowDatePicker(false); // Ẩn DateTimePicker sau khi chọn hoặc hủy bỏ
     if (event.type === 'set' && selectedDate) {
-      // console.log(selectedDate.toISOString().split("T")[0])
       // Nếu người dùng chọn ngày và nhấn OK
-      setDateOfBirth(selectedDate); 
-      if(Object.keys(updatedUser).includes("dateofbirth")) {
-        updatedUser.dateofbirth = selectedDate.toISOString().split("T")[0];
-      } else {
-        updatedUser = {...updatedUser, dateofbirth: selectedDate.toISOString().split("T")[0]};
-      }
+      setDateofbirth(selectedDate); 
     }
   };
 
@@ -79,7 +75,8 @@ export default function PersonalInformationScreen({ navigation }) {
 
   // image
   const [image, setImage] = useState(currentUser?.image);
-
+  const [pickerImage, setPickerImage] = useState(currentUser?.image)
+  // console.log(image)
   const pickImage = async () => {
     // no permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -89,9 +86,10 @@ export default function PersonalInformationScreen({ navigation }) {
       quality: 1,
     });
 
-    console.log(result);
+    // console.log(result.assets[0].uri);
 
     if (!result.canceled) {
+      setPickerImage(result.assets[0].uri);
       setImage(result.assets[0].uri);
     }
   };
@@ -145,10 +143,10 @@ export default function PersonalInformationScreen({ navigation }) {
   const storage = getStorage()
   const [upLoading, setUpLoading] = useState(false)
   const uploadMedia = async() => {
-    if(image) {
+    if(pickerImage) {
       setUpLoading(true)
       try {
-        const {uri} = await FileSystem.getInfoAsync(image);
+        const {uri} = await FileSystem.getInfoAsync(pickerImage);
         const blob = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.onload = () => {
@@ -162,32 +160,36 @@ export default function PersonalInformationScreen({ navigation }) {
             xhr.send(null)
         })
 
-        const fileName = image.substring(image.lastIndexOf('/') + 1)
+        const fileName = pickerImage.substring(pickerImage.lastIndexOf('/') + 1)
         const refStorage = ref(storage, "users/" + fileName)
         await uploadBytes(refStorage, blob).then((snapshot) => {
             // console.log(snapshot);
         });
+        const imageUrl = await getDownloadURL(refStorage);
 
-        await getDownloadURL(refStorage)
-        .then((image) => {
-            const xhr = new XMLHttpRequest();
-            xhr.responseType = 'blob';
-            xhr.onload = (event) => {
-                const blob = xhr.response;
-            };
-            xhr.open('GET', image);
-            xhr.send();
-            // console.log(image)
-            if(Object.keys(updatedUser).includes(image)) {
-              updatedUser.image = image;
-            } else {
-              updatedUser = {...updatedUser, image};
-            }
-            // console.log(updatedUser)
-        })
-        .catch((error) => {
-            // Handle any errors
+        // console.log(imageUrl)
+        await updateDoc(doc(db, "users", currentUser.id), {
+          image: imageUrl
         });
+        // setImage(imageUrl);
+         // Cập nhật image trong state với URL mới
+        // await getDownloadURL(refStorage)
+        // .then((imageUrl) => {
+        //     const xhr = new XMLHttpRequest();
+        //     xhr.responseType = 'blob';
+        //     xhr.onload = (event) => {
+        //         const blob = xhr.response;
+        //     };
+        //     xhr.open('GET', imageUrl);
+        //     xhr.send();
+        //     console.log(imageUrl)
+        //     setImage(imageUrl)
+        //     // console.log(updatedUser)
+        // })
+        // .catch((error) => {
+        //     // Handle any errors
+        // });
+
         setUpLoading(false);
     } catch(error) {
         console.log(error)
@@ -198,7 +200,7 @@ export default function PersonalInformationScreen({ navigation }) {
  
 
   const handleUpdateProfile = async() => {
-    await setGenderOfUpdatedUser()
+    // setGenderOfUpdatedUser()
     await uploadMedia()
     // console.log(updatedUser)
     await updateProfile()
@@ -206,16 +208,26 @@ export default function PersonalInformationScreen({ navigation }) {
     // navigation.navigate('Setting');
   };
 
-  const setGenderOfUpdatedUser = async() => {
-    if(Object.keys(updatedUser).includes(gender)) {
-      updatedUser.gender = gender;
-    } else {
-      updatedUser = {...updatedUser, gender};
-    }
+  useEffect(() => {
+    handleSetUpdatedUser()
+  }, [fullname, email, phone, dateofbirth, gender, address])
+
+  const handleSetUpdatedUser = () => {
+    const newUser = {fullname, email, phone, dateofbirth: !isNaN(dateofbirth) ? dateofbirth.toISOString().split("T")[0]: "", gender, address}
+  
+    setUpdatedUser(newUser)
   }
 
+  // const setGenderOfUpdatedUser = () => {
+  //   if(Object.keys(updatedUser).includes(gender)) {
+  //     updatedUser.gender = gender;
+  //   } else {
+  //     updatedUser = {...updatedUser, gender};
+  //   }
+  // }
+
   const updateProfile = async () => {
-    await setDoc(doc(db, "users", currentUser.id), updatedUser);
+    await updateDoc(doc(db, "users", currentUser.id), updatedUser);
   }
   return (
     <SafeAreaView style={styles.container}>
@@ -247,7 +259,7 @@ export default function PersonalInformationScreen({ navigation }) {
               <View>
                 {image ? (
                   <Image
-                    source={{ uri: image }}
+                    source={{ uri: pickerImage }}
                     style={{
                       height: 200,
                       width: 200,
@@ -290,14 +302,16 @@ export default function PersonalInformationScreen({ navigation }) {
               value={fullname}
               //   onChangeText={setUsername}
               onChangeText={(text) => {
-                setFullname((fullname) => {
-                  fullname = text;
-                  if(Object.keys(updatedUser).includes(fullname)) {
-                    updatedUser.fullname = fullname;
-                  } else {
-                    updatedUser = {...updatedUser, fullname}
-                  }
-                });
+                setFullname(text)
+                // setFullname((fullname) => {
+                //   fullname = text;
+                //   // if(Object.keys(updatedUser).includes(fullname)) {
+                //   //   updatedUser.fullname = fullname;
+                //   // } else {
+                //   //   updatedUser = {...updatedUser, fullname}
+                //   // }
+                //   // console.log(updatedUser)
+                // });
               }}
               placeholder="Enter your fullname"
             />
@@ -307,14 +321,15 @@ export default function PersonalInformationScreen({ navigation }) {
               style={styles.inputField}
               value={email}
               onChangeText={(text) => {
-                setEmail((email) => {
-                  email = text;
-                  if(Object.keys(updatedUser).includes(email)) {
-                    updatedUser.email = email;
-                  } else {
-                    updatedUser = {...updatedUser, email}
-                  }
-                });
+                setEmail(text)
+                // setEmail((email) => {
+                //   email = text;
+                //   // if(Object.keys(updatedUser).includes(email)) {
+                //   //   updatedUser.email = email;
+                //   // } else {
+                //   //   updatedUser = {...updatedUser, email}
+                //   // }
+                // });
               }}
               placeholder="Enter your email address"
             />
@@ -325,14 +340,15 @@ export default function PersonalInformationScreen({ navigation }) {
               value={phone}
               keyboardType="numeric"
               onChangeText={(text) => {
-                setPhone((phone) => {
-                  phone = text;
-                  if(Object.keys(updatedUser).includes(phone)) {
-                    updatedUser.phone = phone;
-                  } else {
-                    updatedUser = {...updatedUser, phone}
-                  }
-                });
+                setPhone(text)
+                // setPhone((phone) => {
+                //   phone = text;
+                //   // if(Object.keys(updatedUser).includes(phone)) {
+                //   //   updatedUser.phone = phone;
+                //   // } else {
+                //   //   updatedUser = {...updatedUser, phone}
+                //   // }
+                // });
               }}
               placeholder="Enter your phone number"
             />
@@ -341,18 +357,18 @@ export default function PersonalInformationScreen({ navigation }) {
             <Pressable onPress={toggleDatePicker}>
               <View style={[styles.fieldContainer]}>
                 <Text>
-                  {dateOfBirth
-                    ? formatNumber(dateOfBirth.getDate()) +
+                  {!isNaN(dateofbirth.getDate())
+                    ? formatNumber(dateofbirth.getDate()) +
                       '/' +
-                      formatNumber(dateOfBirth.getMonth() + 1) +
+                      formatNumber(dateofbirth.getMonth() + 1) +
                       '/' +
-                      dateOfBirth.getFullYear()
+                      dateofbirth.getFullYear()
                     : 'Select your date of birth'}
                 </Text>
                 <FontAwesome name="calendar" size={24} color="#09B44C" />
                 {showDatePicker && (
                   <DateTimePicker
-                    value={dateOfBirth || new Date()}
+                    value={isNaN(dateofbirth.getDate()) ? new Date() : dateofbirth}
                     mode={'date'}
                     is24Hour={true}
                     full="default"
@@ -400,14 +416,15 @@ export default function PersonalInformationScreen({ navigation }) {
               style={styles.inputField}
               value={address}
               onChangeText={(text) => {
-                setAddress((address) => {
-                  address = text;
-                  if(Object.keys(updatedUser).includes(address)) {
-                    updatedUser.address = address;
-                  } else {
-                    updatedUser = {...updatedUser, address}
-                  }
-                });
+                setAddress(text)
+                // setAddress((address) => {
+                //   address = text;
+                //   // if(Object.keys(updatedUser).includes(address)) {
+                //   //   updatedUser.address = address;
+                //   // } else {
+                //   //   updatedUser = {...updatedUser, address}
+                //   // }
+                // });
               }}
               placeholder="Enter your address"
             />
