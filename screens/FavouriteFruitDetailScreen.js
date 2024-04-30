@@ -72,6 +72,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
                 uri: fruit?.image,
               }}
               style={{ width: windowWidth, height: 300 }}
+              resizeMode = 'contain'
             />
           </View>
 
@@ -139,7 +140,7 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
                     textAlign: 'justify',
                   }}
                 >
-                  {fruit?.description}
+                  {fruit?.origin}
                 </Text>
               </View>
 

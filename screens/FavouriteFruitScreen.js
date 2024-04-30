@@ -35,6 +35,7 @@ import {
   getDoc,
   onSnapshot,
   query,
+  deleteDoc
 } from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
@@ -96,6 +97,26 @@ export default function FavouriteFruitScreen({ navigation }) {
     setFilteredFruitList(filteredList);
   }, [search, fruits, favoriteIds]);
 
+  const handleDeleteFruit = async(id_fruit) => {
+    deleteFavourite(id_fruit)
+  }
+
+  const deleteFavourite = async (id_fruit) => {
+    try {
+      const q = query(
+        collection(db, 'users', currentUser.id, 'favorite-fruits'),
+        where('id_fruit', '==', id_fruit)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+      // console.log("Document deleted from favorites!");
+    } catch (error) {
+      console.error('Error deleting document from favorites: ', error);
+    }
+  };
   // Hidden bottom navigation when navigate to this screen
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -168,7 +189,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                     >
                       <AntDesign
                         name={item.favourite == true ? 'heart' : 'hearto'}
-                        size={36}
+                        size={30}
                         color={item.favourite == true ? 'red' : '#09B44C'}
                       />
                       <Text style={styles.cardText}>{item.name}</Text>
@@ -179,10 +200,10 @@ export default function FavouriteFruitScreen({ navigation }) {
                           }
                         }
                         name="trash-o"
-                        size={36}
+                        size={30}
                         color="red"
                         onPress={() => {
-                          console.log(`Click item ${item.id_fruit}`);
+                          handleDeleteFruit(item.id_fruit)
                         }}
                       />
                     </View>
@@ -192,10 +213,8 @@ export default function FavouriteFruitScreen({ navigation }) {
                         style={{
                           width: (windowWidth - 32 - 80 - 40) / 2,
                           height: (windowWidth - 32 - 80 - 40) / 2,
-
-                          // width: 120,
-                          // height: 120,
                         }}
+                        resizeMode='center'
                       />
                       <View
                         style={{
@@ -226,12 +245,12 @@ export default function FavouriteFruitScreen({ navigation }) {
                               flex: 3,
                               fontSize: 12,
                               color: 'black',
-                              fontWeight: 'bold',
+                              fontWeight: '500',
                               // backgroundColor: 'green',
                             }}
                             numberOfLines={2}
                           >
-                            China, India, Malaysia. China, India, Malaysia
+                            {item.origin}
                           </Text>
                         </View>
                         <View
@@ -261,7 +280,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                             }}
                             numberOfLines={2}
                           >
-                            Vitamin C, Kali, Canxi, Glucozo, Fiber
+                            {item.nutrition}
                           </Text>
                         </View>
                         <View
@@ -291,10 +310,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                             }}
                             numberOfLines={3}
                           >
-                            Plums are high in vitamins C and K, as well as
-                            antioxidants like beta-carotene and anthocyanins.
-                            They may have benefits for heart health, digestion,
-                            and bone health.
+                            {item.benefit}
                           </Text>
                         </View>
                       </View>
@@ -361,7 +377,7 @@ const styles = StyleSheet.create({
     // marginTop: 8,
     color: '#09B44C',
     // marginLeft: 8,
-    fontSize: 20,
+    fontSize: 24,
     textAlign: 'center',
     fontWeight: 'bold',
   },
