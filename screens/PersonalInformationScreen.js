@@ -210,10 +210,10 @@ export default function PersonalInformationScreen({ navigation }) {
 
   useEffect(() => {
     handleSetUpdatedUser()
-  }, [fullname, email, phone, dateofbirth, gender, address])
+  }, [fullname, phone, dateofbirth, gender, address])
 
   const handleSetUpdatedUser = () => {
-    const newUser = {fullname, email, phone, dateofbirth: !isNaN(dateofbirth) ? dateofbirth.toISOString().split("T")[0]: "", gender, address}
+    const newUser = {fullname, phone, dateofbirth: !isNaN(dateofbirth) ? dateofbirth.toISOString().split("T")[0]: "", gender, address}
   
     setUpdatedUser(newUser)
   }
@@ -318,7 +318,7 @@ export default function PersonalInformationScreen({ navigation }) {
 
             <Text style={styles.labelForm}>Email address</Text>
             <TextInput
-              style={styles.inputField}
+              style={[{color: "#65737E"},styles.inputField]}
               value={email}
               onChangeText={(text) => {
                 setEmail(text)
@@ -332,6 +332,7 @@ export default function PersonalInformationScreen({ navigation }) {
                 // });
               }}
               placeholder="Enter your email address"
+              editable = {false}
             />
 
             <Text style={styles.labelForm}>Phone number</Text>
@@ -509,6 +510,7 @@ const styles = StyleSheet.create({
     // marginBottom: 15,
     padding: 10,
     borderRadius: 5,
+    // color: "red"
   },
 
   fieldContainer: {
