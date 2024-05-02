@@ -25,8 +25,23 @@ import {
 } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
-//
+
+import { useAuth } from './AuthContext';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  where,
+  doc,
+  query,
+  getDocs,
+} from 'firebase/firestore';
+import { app } from '../firebaseConfig';
 export default function FavouriteFruitDetailScreen({ navigation, route }) {
+  
+  const { currentUser } = useAuth();
+  const db = getFirestore(app);
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
@@ -48,7 +63,44 @@ export default function FavouriteFruitDetailScreen({ navigation, route }) {
   //
   const [isFavourite, setIsFavourite] = useState(fruit.favourite); // Trạng thái của trái tim
   const toggleFavourite = () => {
-    setIsFavourite(!isFavourite); // Đảo ngược trạng thái khi nút được nhấn
+    setIsFavourite((isFavourite) => {
+      isFavourite = !isFavourite;
+      // console.log(fruit.id)
+      if (isFavourite) {
+        addFavourite();
+      } else {
+        deleteFavourite();
+      }
+
+      return isFavourite;
+    }); // Đảo ngược trạng thái khi nút được nhấn // Đảo ngược trạng thái khi nút được nhấn
+  };
+
+  const addFavourite = async () => {
+    const docRef = await addDoc(
+      collection(db, 'users', currentUser.id, 'favorite-fruits'),
+      {
+        id_fruit: fruit.id_fruit,
+      }
+    );
+    // console.log("Document written with ID: ", docRef.id);
+  };
+
+  const deleteFavourite = async () => {
+    try {
+      const q = query(
+        collection(db, 'users', currentUser.id, 'favorite-fruits'),
+        where('id_fruit', '==', fruit.id_fruit)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+      // console.log("Document deleted from favorites!");
+    } catch (error) {
+      console.error('Error deleting document from favorites: ', error);
+    }
   };
 
   return (
