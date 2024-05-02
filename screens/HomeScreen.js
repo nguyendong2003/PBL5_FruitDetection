@@ -39,18 +39,20 @@ import {
   query,
 } from 'firebase/firestore';
 
-import { app } from '../firebaseConfig';
+import { app} from '../firebaseConfig';
 
+import { getAuth, signOut } from "firebase/auth";
 export default function HomeScreen({ navigation }) {
+  const auth = getAuth(app)
   const db = getFirestore(app);
   const [fruits, setFruits] = useState([]);
+  
+  const { currentUser, setUser } = useAuth();
+  //
   useEffect(() => {
     getFruits();
     getFavoriteIds();
   }, []);
-  //
-  const { currentUser, setUser } = useAuth();
-  //
   const [isAvatarFocus, setIsAvatarFocus] = useState(false);
   const [search, setSearch] = useState('');
   const [filteredFruitList, setFilteredFruitList] = useState([]);
@@ -210,6 +212,11 @@ export default function HomeScreen({ navigation }) {
                     borderColor: '#d6d7db',
                   }}
                   onPress={() => {
+                    signOut(auth).then(()=> {
+
+                    }).catch((error)=> {
+
+                    })
                     setUser(null);
                     setIsAvatarFocus(false);
                     navigation.navigate('Login');

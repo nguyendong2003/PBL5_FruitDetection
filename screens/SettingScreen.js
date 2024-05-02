@@ -33,12 +33,19 @@ import {
 import { useState, useEffect, useRef } from 'react';
 
 import { useAuth } from './AuthContext';
+import { getAuth, signOut } from "firebase/auth";
+import { app } from '../firebaseConfig';
 
 export default function SettingScreen({ navigation, route }) {
-  //
+  const auth = getAuth(app);
   const { currentUser, setUser } = useAuth();
 
   const handleLogout = () => {
+    signOut(auth).then(() => {
+      // Sign-out successful.
+    }).catch((error) => {
+      // An error happened.
+    });
     setUser(null);
     navigation.navigate('Login');
   };

@@ -22,7 +22,9 @@ import { useState, useEffect } from 'react';
 
 import { getFirestore, updateDoc, doc } from "firebase/firestore"; 
 import { app } from '../firebaseConfig';
+import { getAuth, updatePassword, reauthenticateWithCredential, EmailAuthProvider} from "firebase/auth";
 export default function ChangePasswordScreen({ navigation }) {
+  const auth = getAuth(app);
   const { currentUser } = useAuth();
   const db = getFirestore(app)
   const [currentPassword, setCurrentPassword] = useState('');
@@ -96,14 +98,14 @@ export default function ChangePasswordScreen({ navigation }) {
     let newErrors = {};
 
     
-    if (!currentPassword) {
-      newErrors['currentPassword'] = 'Current password cannot be empty';
-    } 
+    // if (!currentPassword) {
+    //   newErrors['currentPassword'] = 'Current password cannot be empty';
+    // } 
 
-    if(currentPassword && currentPassword !== currentUser.password) {
-      console.log(currentUser.password)
-      newErrors['currentPasswordNotCorrect'] = 'Current password not correct';
-    }
+    // if(currentPassword && currentPassword !== currentUser.password) {
+    //   // console.log(currentUser.password)
+    //   newErrors['currentPasswordNotCorrect'] = 'Current password not correct';
+    // }
 
     if (!newPassword) {
       newErrors['newPasswordEmptyError'] = 'New password cannot be empty';
@@ -129,16 +131,52 @@ export default function ChangePasswordScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
-      updatePassword();
-      alert('Change password successfully');
-      // console.log(currentUser.password)
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmNewPassword('')
+      
+      const user = auth.currentUser;
+      // console.log(user)
+      updatePassword(user, newPassword).then(() => {
+        // updatePasswordFirestore()
+        
+        alert('Change password successfully');
+        setCurrentPassword('')
+        setNewPassword('')
+        setConfirmNewPassword('')
+      }).catch((error) => {
+        console.log(error.code)
+        if(error.code === "auth/weak-password") {
+          Alert.alert('Invalid credentials', "Password should be at least 6 characters")
+        } else if(error.code === "auth/requires-recent-login") {
+          const user = auth.currentUser;
+
+          // TODO(you): prompt the user to re-provide their sign-in credentials
+          let credential = EmailAuthProvider.credential(
+            user.email,
+            currentUser.password
+          );
+          reauthenticateWithCredential(user, credential).then(() => {
+            updatePassword(user, newPassword).then(() => {
+              // updatePasswordFirestore()
+              
+              alert('Change password successfully');
+              setCurrentPassword('')
+              setNewPassword('')
+              setConfirmNewPassword('')
+            })
+            .catch((error) => {
+              if(error.code === "auth/weak-password") {
+                Alert.alert('Invalid credentials', "Password should be at least 6 characters")
+              } 
+            })
+          }).catch((error) => {
+            // An error ocurred
+            // ...
+          });
+        }
+      });
     }
   };
 
-  const updatePassword = async() => {
+  const updatePasswordFirestore = async() => {
     await updateDoc(doc(db, "users", currentUser.id), {
       password: newPassword
     });
@@ -157,8 +195,8 @@ export default function ChangePasswordScreen({ navigation }) {
         >
           <View style={styles.form}>
             {/* <Text style={styles.textTitle}>Login</Text> */}
-            <Text style={styles.labelForm}>Current Password</Text>
-            <View style={[styles.passwordContainer]}>
+            {/* <Text style={styles.labelForm}>Current Password</Text> */}
+            {/* <View style={[styles.passwordContainer]}>
               <TextInput
                 style={styles.inputNewPassword}
                 value={currentPassword}
@@ -176,23 +214,23 @@ export default function ChangePasswordScreen({ navigation }) {
                   }
                 }}
                 placeholder="Enter your current password"
-              />
-              <MaterialCommunityIcons
+              /> */}
+              {/* <MaterialCommunityIcons
                 name={showCurrentPassword ? 'eye-off' : 'eye'}
                 size={24}
                 color="#aaa"
                 style={styles.icon}
                 onPress={toggleShowCurrentPassword}
               />
-            </View>
+            </View> */}
 
-            {errors['currentPassword'] ? (
+            {/* {errors['currentPassword'] ? (
               <Text style={styles.errorText}>{errors['currentPassword']}</Text>
             ) : null}
 
             {errors['currentPasswordNotCorrect'] ? (
               <Text style={styles.errorText}>{errors['currentPasswordNotCorrect']}</Text>
-            ) : null}
+            ) : null} */}
 
             <Text style={styles.labelForm}>New Password</Text>
             <View style={[styles.passwordContainer]}>

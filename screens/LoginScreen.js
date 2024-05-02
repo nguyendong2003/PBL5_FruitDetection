@@ -31,11 +31,15 @@ import {
   getDoc,
   onSnapshot,
   query,
+  updateDoc,
+  doc
 } from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset  } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
+  const auth = getAuth(app);
   const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
   const [email, setEmail] = useState('');
@@ -78,10 +82,14 @@ export default function LoginScreen({ navigation }) {
 
   const handleRegister = async () => {
     let newErrors = {};
-
+    const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
     // Kiểm tra email
     if (!email) {
       newErrors['emailError'] = 'Email address cannot be empty';
+    }
+    
+    if(email && !emailRegex.test(email)) {
+      newErrors['emailInvalid'] = 'Email address not valid';
     }
 
     // Kiểm tra mật khẩu
@@ -95,35 +103,70 @@ export default function LoginScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
-
-      try {
-        const userRef = collection(db, 'users');
-        const q = query(
-          userRef,
-          where('email', '==', email),
-          where('password', '==', password)
-        );
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-          // Không tìm thấy user với email và password tương ứng
-          Alert.alert('Invalid credentials', 'Email or password is incorrect');
-        } else {
-          const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const user = doc.data();
-              setUser(user);
-              navigation.navigate('TabNavigationHome');
-            });
-            // console.log(favoriteIds)
-          });
-        }
-      } catch (error) {
-        console.error('Error getting documents: ', error);
-        // Xử lý lỗi ở đây nếu có
-      }
+      // console.log(auth)
+      signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // console.log(userCredential)
+        getUser()
+      })
+      .catch((error) => {
+        // console.log(error.message)
+        Alert.alert('Invalid credentials', 'Email or password is incorrect');
+      });
+      
     }
   };
+
+  const handleResetPassword = () => {
+    let newErrors = {};
+    const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+    // Kiểm tra email
+    if (!email) {
+      Alert.alert('Error','Email address cannot be empty');
+    } else if(email && !emailRegex.test(email)) {
+      Alert.alert('Error','Email address not valid');
+    } else {
+      Alert.alert('Not','Please check your email address and try again');
+      sendPasswordResetEmail(auth, email)
+      .then(() => {
+        
+      })
+      .catch((error) => {
+        const errorCode = error.code; 
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+      });
+      
+    }
+  
+    
+  }
+
+  const getUser = async() => {
+    try {
+      const userRef = collection(db, 'users');
+      const q = query(
+        userRef,
+        where('email', '==', email)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        Alert.alert('Invalid credentials', 'Email or password is incorrect');
+      } else {
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            const user = doc.data();
+            setUser(user);
+            navigation.navigate('TabNavigationHome');
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Error getting documents: ', error);
+      // Xử lý lỗi ở đây nếu có
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -156,11 +199,19 @@ export default function LoginScreen({ navigation }) {
                 if (errors['emailError']) {
                   setErrors({ ...errors, emailError: null });
                 }
+
+                if (errors['emailInvalid']) {
+                  setErrors({ ...errors, emailInvalid: null });
+                }
               }}
               placeholder="Enter your email address"
             />
             {errors['emailError'] ? (
               <Text style={styles.errorText}>{errors['emailError']}</Text>
+            ) : null}
+
+            {errors['emailInvalid'] ? (
+              <Text style={styles.errorText}>{errors['emailInvalid']}</Text>
             ) : null}
 
             <Text style={styles.labelForm}>Password</Text>
@@ -194,7 +245,7 @@ export default function LoginScreen({ navigation }) {
               </Text>
             ) : null}
 
-            <Pressable onPress={() => Alert.alert('hello')}>
+            <Pressable onPress={() => handleResetPassword()}>
               <Text style={styles.forgotPassword}>Forgot password?</Text>
             </Pressable>
 

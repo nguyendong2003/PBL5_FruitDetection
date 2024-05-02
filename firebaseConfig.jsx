@@ -1,4 +1,7 @@
 import { initializeApp } from "firebase/app";
+import { initializeAuth, getReactNativePersistence  } from "firebase/auth";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { getFirestore, initializeFirestore } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyAks5OOJ_VcLMIhjSr81yVs0GpwZgTeM_E",
   authDomain: "fruit-detection-4af07.firebaseapp.com",
@@ -10,4 +13,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
+export default {app};

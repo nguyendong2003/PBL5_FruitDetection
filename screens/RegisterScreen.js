@@ -21,8 +21,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
 import { app } from '../firebaseConfig';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 export default function RegisterScreen({ navigation }) {
-
+  const auth = getAuth(app)
   const db = getFirestore(app)
   const [email, setEmail] = useState('');
   const [fullname, setFullname] = useState('');
@@ -59,9 +60,17 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = () => {
     // console.log("ok")
     let newErrors = {};
+    const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+    // Kiểm tra email
+    
 
     if (!email) {
       newErrors['emailError'] = 'Email cannot be empty';
+    }
+
+    
+    if(email && !emailRegex.test(email)) {
+      newErrors['emailInvalid'] = 'Email address not valid';
     }
 
     // Kiểm tra username
@@ -90,12 +99,21 @@ export default function RegisterScreen({ navigation }) {
         // console.log("fail")
       setErrors(newErrors);
     } else {
+      
+      setErrors({});
         // console.log("oke")
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
-      setErrors({});
-      addUser();
-      alert('Register successfully');
-      navigation.navigate('Login');
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        addUser()
+        alert('Register successfully');
+        navigation.navigate('Login');
+      })
+      .catch((error) => {
+        if(error.code === "auth/weak-password") {
+          Alert.alert('Invalid credentials', "Password should be at least 6 characters")
+        }
+      });
     }
   }
 
@@ -106,7 +124,7 @@ export default function RegisterScreen({ navigation }) {
       password: password
     });
     
-    console.log("Document written with ID: ", docRef.id);
+    // console.log("Document written with ID: ", docRef.id);
     await updateDoc(doc(db, "users", docRef.id), {
       id: docRef.id
     });
@@ -144,12 +162,20 @@ export default function RegisterScreen({ navigation }) {
                 if (errors['emailError']) {
                   setErrors({ ...errors, emailError: null });
                 }
+                if (errors['emailInvalid']) {
+                  setErrors({ ...errors, emailInvalid: null });
+                }
               }}
               placeholder="Enter your email address"
             />
             {errors['emailError'] ? (
               <Text style={styles.errorText}>{errors['emailError']}</Text>
             ) : null}
+
+            {errors['emailInvalid'] ? (
+              <Text style={styles.errorText}>{errors['emailInvalid']}</Text>
+            ) : null}
+
 
             <Text style={styles.labelForm}>Full name</Text>
             <TextInput
