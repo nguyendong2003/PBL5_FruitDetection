@@ -30,9 +30,11 @@ import {
 import { useState, useEffect, useRef } from 'react';
 // Upload image
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from "expo-file-system"
+import {decode as atob, encode as btoa} from 'base-64'
 // Camera
 import { Camera, CameraType } from 'expo-camera';
-
+import axios from "axios";
 export default function DetectScreen({ navigation, route }) {
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -81,10 +83,10 @@ export default function DetectScreen({ navigation, route }) {
       quality: 1,
     });
 
-    console.log(result);
+    console.log(result);  
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage(result);
       setPhoto(null);
     }
   };
@@ -110,6 +112,7 @@ export default function DetectScreen({ navigation, route }) {
     };
 
     let newPhoto = await cameraRef.current.takePictureAsync(options);
+    console.log(newPhoto.uri);
     setShowCamera(false);
     setPhoto(newPhoto);
     setImage(null);
@@ -120,6 +123,94 @@ export default function DetectScreen({ navigation, route }) {
     // setHasCameraPermission(cameraPermission.status === 'granted');
     setShowCamera(true);
   };
+
+  const [imageOutput, setImageOutput] = useState(null)
+  const handleDetect = () => {
+    if(image) {
+      detectByImage()
+    } 
+    if(photo) {
+      detectByPhoto()
+    }
+  }
+
+  const detectByImage = async() => {
+    if(image) {
+      try {
+        const formData = new FormData()
+        formData.append("image", {
+          uri: image.assets[0].uri,
+          type: image.assets[0].mimeType,
+          name: "image"
+        })
+        console.log("Image: ", formData)
+        try {
+          fetch("https://cloud-server-detect.onrender.com/detect", {
+            method: "POST",
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data)
+            if (!Object.prototype.hasOwnProperty.call(data, "failed")) {
+              // console.log(data.image)
+              setImageOutput(data.image)
+            } else {
+              alert(response.data.failed);
+            }
+          })
+          .catch((error) => console.log(error))
+          // const response = await axios.post(
+          //   "https://cloud-server-detect.onrender.com/detect",
+          //   formData
+          // )
+          // console.log(response.data)
+        }catch(error) {
+          console.log(error)
+        }
+      } catch(error) {
+          console.log(error)
+      }
+    }
+    
+  }
+
+  const detectByPhoto = async() => {
+    if(photo) {
+      const formData = new FormData()
+        formData.append("image", {
+          uri: photo.uri,
+          type: "image/jpg",
+          name: "image"
+        })
+      try {
+        fetch("https://cloud-server-detect.onrender.com/detect", {
+            method: "POST",
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data)
+            if (!Object.prototype.hasOwnProperty.call(data, "failed")) {
+              // console.log(data.image)
+              setImageOutput(data.image)
+            } else {
+              alert(response.data.failed);
+            }
+          })
+          .catch((error) => console.log(error))
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
   if (showCamera) {
     return (
       <SafeAreaView style={styles.container}>
@@ -198,8 +289,9 @@ export default function DetectScreen({ navigation, route }) {
             {photo ? (
               <Image
                 // source={{ uri: image }}
-                source={{ uri: 'data:image/jpg;base64,' + photo.base64 }}
+                // source={{ uri: 'data:image/jpg;base64,' + photo.base64 }}
                 // style={{ width: windowWidth, height: windowWidth }}
+                source = {{uri: photo.uri}}
                 style={{
                   width: 300,
                   height: 300,
@@ -208,7 +300,7 @@ export default function DetectScreen({ navigation, route }) {
               />
             ) : image ? (
               <Image
-                source={{ uri: image }}
+                source={{ uri : image.assets[0].uri }}
                 // style={{ width: windowWidth, height: windowWidth }}
                 style={{ width: 300, height: 300 }}
                 resizeMode="contain"
@@ -226,7 +318,7 @@ export default function DetectScreen({ navigation, route }) {
           >
             <Pressable
               style={styles.button}
-              onPress={() => alert('Detect button')}
+              onPress={() => handleDetect()}
             >
               <Text style={styles.buttonText}>Detect</Text>
             </Pressable>
@@ -253,6 +345,26 @@ export default function DetectScreen({ navigation, route }) {
                 </Text>
               </Pressable>
             </View>
+          </View>
+          <View style = {styles.bottomContainer}>
+            <Text 
+              style = {{ 
+                fontSize: 20, fontWeight: 'bold',
+                marginBottom: 15
+              }}
+            >Result Detection: </Text>
+            {imageOutput && (
+              <Image
+                // source={{ uri: image }}
+                source={{ uri: 'data:image/jpg;base64,' + imageOutput }}
+                // style={{ width: windowWidth, height: windowWidth }}
+                style={{
+                  width: 400,
+                  height: 400,
+                }}
+                resizeMode="contain"
+              />
+            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -292,4 +404,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  bottomContainer: {
+    width: "100%",
+    alignItems:"center",
+    marginTop: 20
+  }
 });
