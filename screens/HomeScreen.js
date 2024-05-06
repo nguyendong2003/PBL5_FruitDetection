@@ -128,12 +128,13 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.topContainer}>
             <View>
               <Text style={{ fontSize: 20 }}>
-                Welcome
+                Welcome        
                 <Image
                   source={require('../assets/hand3.png')}
-                  style={{ width: 20, height: 20 }}
+                  style={{ width: 20, height: 20}}
                 />
               </Text>
+              
               <Text
                 style={{ color: 'black', fontWeight: 'bold', fontSize: 20 }}
               >
@@ -278,7 +279,7 @@ export default function HomeScreen({ navigation }) {
                     >
                       <AntDesign
                         name={item.favourite == true ? 'heart' : 'hearto'}
-                        size={20}
+                        size={16}
                         color={item.favourite == true ? 'red' : '#09B44C'}
                       />
                       <Text style={styles.cardText}>{item.name}</Text>
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
   cardText: {
     // marginTop: 8,
     marginLeft: 10,
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
   },
