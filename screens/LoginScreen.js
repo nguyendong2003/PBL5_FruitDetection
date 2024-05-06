@@ -36,10 +36,12 @@ import {
 } from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset  } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, onAuthStateChanged  } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
+
   const auth = getAuth(app);
+  // console.log(auth)
   const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
   const [email, setEmail] = useState('');
@@ -103,10 +105,16 @@ export default function LoginScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
-      // console.log(auth)
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // console.log(userCredential)
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const uid = user.uid;
+            // console.log(user);
+            // ...
+          } else {
+          }
+        });
         getUser()
       })
       .catch((error) => {
