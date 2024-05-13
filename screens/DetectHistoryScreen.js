@@ -24,10 +24,13 @@ import { useState, useEffect } from 'react';
 
 // fruit.json
 import resultDetectFruit from '../data/result_detect_fruit.json';
-
+import { useAuth } from './AuthContext';
+import { getFirestore, collection, addDoc, deleteDoc, where, doc ,query, getDocs, updateDoc, orderBy } from "firebase/firestore"; 
+import { app } from '../firebaseConfig';
 export default function DetectHistoryScreen({ navigation }) {
   // const [search, setSearch] = useState('');
-
+  const db = getFirestore(app)
+  const { currentUser, setUser } = useAuth();
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
@@ -39,6 +42,22 @@ export default function DetectHistoryScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
+  const [listDetection, setListDetection] = useState([])
+  useEffect(() => {
+    getListDetection()
+  }, [])
+
+  const getListDetection = async() => {
+    setListDetection([]);
+    const q = query(collection(db, 'users', currentUser.id, "detections"), orderBy('date', 'desc'))
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // console.log(doc.id, " => ", doc.data());
+      setListDetection((listDetection) => [...listDetection, doc.data()]);
+    });
+
+    // console.log(listDetection)
+  }
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
   //     // Reset state when screen gets focused again
@@ -77,7 +96,7 @@ export default function DetectHistoryScreen({ navigation }) {
         <View style={styles.scrollContainer}>
           <FlatList
             style={{ marginTop: 8, marginBottom: 8 }}
-            data={resultDetectFruit}
+            data={listDetection}
             renderItem={({ item }) => {
               return (
                 <Pressable
@@ -95,7 +114,7 @@ export default function DetectHistoryScreen({ navigation }) {
                       color: '#09B44C',
                     }}
                   >
-                    {item?.time}
+                    {item?.date}
                   </Text>
                   <View
                     style={[
@@ -105,7 +124,6 @@ export default function DetectHistoryScreen({ navigation }) {
                         height: (windowWidth - 32 - 20) / 2,
                       },
                     ]}
-                    key={item.id}
                   >
                     <View>
                       <Text
@@ -129,6 +147,7 @@ export default function DetectHistoryScreen({ navigation }) {
                           // width: 100,
                           // height: 100,
                         }}
+                        resizeMode='contain'
                       />
                     </View>
 
@@ -143,7 +162,7 @@ export default function DetectHistoryScreen({ navigation }) {
                         Output
                       </Text>
                       <Image
-                        source={{ uri: item?.image_output }}
+                        source={{ uri:"data:image/jpg;base64," + item?.image_output }}
                         // source={require('../assets/banana_400.jpg')}
                         // source={require('../assets/23.jpg')}
                         style={{
@@ -154,13 +173,14 @@ export default function DetectHistoryScreen({ navigation }) {
                           // height: 100,
                           // width: '100%',
                         }}
+                        resizeMode='contain'
                       />
                     </View>
                   </View>
                 </Pressable>
               );
             }}
-            keyExtractor={(item, index) => item?.id.toString()}
+            // keyExtractor={(item, index) => item?.id.toString()}
             ItemSeparatorComponent={<View style={{ height: 16 }}></View>}
             ListEmptyComponent={
               <Text

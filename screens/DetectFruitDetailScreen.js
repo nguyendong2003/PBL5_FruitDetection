@@ -77,6 +77,7 @@ export default function DetectFruitDetailScreen({ navigation, route }) {
                 uri: fruit?.image_input,
               }}
               style={{ width: windowWidth, height: windowWidth }}
+              resizeMode='contain'
             />
           </View>
 
@@ -93,13 +94,14 @@ export default function DetectFruitDetailScreen({ navigation, route }) {
             </Text>
             <Image
               source={{
-                uri: fruit?.image_output,
+                uri: "data:image/jpg;base64," + fruit?.image_output,
               }}
               style={{ width: windowWidth, height: windowWidth }}
+              resizeMode='contain'
             />
           </View>
 
-          <View
+          {/* <View
             style={[
               styles.detailContainer,
               ,
@@ -158,37 +160,8 @@ export default function DetectFruitDetailScreen({ navigation, route }) {
                   {fruit?.name}
                 </Text>
               </View>
-
-              {/* <View
-                style={{
-                  flexDirection: 'row',
-                  padding: 12,
-                }}
-              >
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 16,
-                    color: '#09B44C',
-                    fontWeight: '600',
-                  }}
-                >
-                  Nutrition:
-                </Text>
-                <Text
-                  style={{
-                    flex: 3,
-                    fontSize: 16,
-                    color: 'black',
-                    fontWeight: '600',
-                    textAlign: 'justify',
-                  }}
-                >
-                  {fruit?.nutrition}
-                </Text>
-              </View> */}
             </View>
-          </View>
+          </View> */}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

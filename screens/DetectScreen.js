@@ -28,17 +28,27 @@ import {
 } from '@expo/vector-icons';
 
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from './AuthContext';
+
 // Upload image
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from "expo-file-system"
-import {decode as atob, encode as btoa} from 'base-64'
+import {decode, encode} from 'base-64'
 // Camera
-import { Camera, CameraType } from 'expo-camera';
+import { Camera, CameraType} from 'expo-camera/legacy';
 import axios from "axios";
+import { getFirestore, collection, addDoc, deleteDoc, where, doc ,query, getDocs, updateDoc } from "firebase/firestore"; 
+import {getStorage, ref, getDownloadURL, uploadBytes, uploadString } from "firebase/storage";
+import { app } from '../firebaseConfig';
+// import { CameraType } from 'expo-camera/build/legacy/Camera.types';
 export default function DetectScreen({ navigation, route }) {
+  const storage = getStorage()
+  const db = getFirestore(app)
+  const { currentUser, setUser } = useAuth();
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
+  //console.log(CameraType.back)
 
   useEffect(() => {
     async function requestCameraPermission() {
@@ -83,7 +93,7 @@ export default function DetectScreen({ navigation, route }) {
       quality: 1,
     });
 
-    console.log(result);  
+    // console.log(result);  
 
     if (!result.canceled) {
       setImage(result);
@@ -98,10 +108,9 @@ export default function DetectScreen({ navigation, route }) {
   const [showCamera, setShowCamera] = useState(false);
   const [type, setType] = useState(CameraType.back);
 
+  // console.log(type)
   function toggleCameraType() {
-    setType((current) =>
-      current === CameraType.back ? CameraType.front : CameraType.back
-    );
+    setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
 
   let takePicture = async () => {
@@ -112,7 +121,7 @@ export default function DetectScreen({ navigation, route }) {
     };
 
     let newPhoto = await cameraRef.current.takePictureAsync(options);
-    console.log(newPhoto.uri);
+    // console.log(newPhoto.uri);
     setShowCamera(false);
     setPhoto(newPhoto);
     setImage(null);
@@ -137,13 +146,14 @@ export default function DetectScreen({ navigation, route }) {
   const detectByImage = async() => {
     if(image) {
       try {
+        const uri = image.assets[0].uri;
         const formData = new FormData()
         formData.append("image", {
-          uri: image.assets[0].uri,
+          uri: uri,
           type: image.assets[0].mimeType,
           name: "image"
         })
-        console.log("Image: ", formData)
+        // console.log("Image: ", formData)
         try {
           fetch("https://cloud-server-detect.onrender.com/detect", {
             method: "POST",
@@ -154,20 +164,16 @@ export default function DetectScreen({ navigation, route }) {
           })
           .then((res) => res.json())
           .then((data) => {
-            console.log(data)
             if (!Object.prototype.hasOwnProperty.call(data, "failed")) {
-              // console.log(data.image)
               setImageOutput(data.image)
+              // console.log((new Date(Date.now())).toLocaleDateString())
+              //uploadImageBase64(image.assets[0].mimeType,uri.substring(uri.lastIndexOf('/') + 1), data.image)
+              uploadToFirebase(uri, data.image)
             } else {
-              alert(response.data.failed);
+              alert(data.failed);
             }
           })
           .catch((error) => console.log(error))
-          // const response = await axios.post(
-          //   "https://cloud-server-detect.onrender.com/detect",
-          //   formData
-          // )
-          // console.log(response.data)
         }catch(error) {
           console.log(error)
         }
@@ -176,6 +182,42 @@ export default function DetectScreen({ navigation, route }) {
       }
     }
     
+  }
+
+  const uploadToFirebase = async(input, output) => {
+    const image_input = await uploadImageUri(input)
+    const docRef = await addDoc(
+      collection(db, 'users', currentUser.id, 'detections'),
+      {
+        date: (new Date()).toLocaleString(),
+        image_input : image_input,
+        image_output : output
+      }
+    );
+  }
+
+  const uploadImageUri = async(image) => {
+    const {uri} = await FileSystem.getInfoAsync(image);
+    const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+            resolve(xhr.response)
+        }
+        xhr.onerror = (e) => {
+            reject(new TypeError('Network request failed'))
+        }
+        xhr.responseType = 'blob'
+        xhr.open('GET', uri, true)
+        xhr.send(null)
+    })
+
+    const fileName = image.substring(image.lastIndexOf('/') + 1)
+    const refStorage = ref(storage, "detection/" + fileName)
+    await uploadBytes(refStorage, blob).then((snapshot) => {
+        // console.log(snapshot);
+    });
+    const imageUrl = await getDownloadURL(refStorage);
+    return imageUrl
   }
 
   const detectByPhoto = async() => {
@@ -196,12 +238,12 @@ export default function DetectScreen({ navigation, route }) {
           })
           .then((res) => res.json())
           .then((data) => {
-            console.log(data)
+            // console.log(data)
             if (!Object.prototype.hasOwnProperty.call(data, "failed")) {
-              // console.log(data.image)
               setImageOutput(data.image)
+              uploadToFirebase(photo.uri, data.image)
             } else {
-              alert(response.data.failed);
+              alert(data.failed);
             }
           })
           .catch((error) => console.log(error))
@@ -293,8 +335,8 @@ export default function DetectScreen({ navigation, route }) {
                 // style={{ width: windowWidth, height: windowWidth }}
                 source = {{uri: photo.uri}}
                 style={{
-                  width: 300,
-                  height: 300,
+                  width: windowWidth,
+                  height: windowWidth,
                 }}
                 resizeMode="contain"
               />
@@ -302,7 +344,7 @@ export default function DetectScreen({ navigation, route }) {
               <Image
                 source={{ uri : image.assets[0].uri }}
                 // style={{ width: windowWidth, height: windowWidth }}
-                style={{ width: 300, height: 300 }}
+                style={{ width: windowWidth, height: windowWidth }}
                 resizeMode="contain"
               />
             ) : (
@@ -359,9 +401,10 @@ export default function DetectScreen({ navigation, route }) {
                 source={{ uri: 'data:image/jpg;base64,' + imageOutput }}
                 // style={{ width: windowWidth, height: windowWidth }}
                 style={{
-                  width: 400,
-                  height: 400,
+                  width: windowWidth,
+                  height: windowWidth,
                 }}
+                
                 resizeMode="contain"
               />
             )}
@@ -387,7 +430,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     backgroundColor: '#09B44C',
-    padding: 44,
+    // padding: 44,
   },
   //
   button: {
@@ -407,6 +450,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     width: "100%",
     alignItems:"center",
-    marginTop: 20
+    marginTop: 20,
+    marginBottom: 20
   }
 });
