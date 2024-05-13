@@ -245,7 +245,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                               flex: 3,
                               fontSize: 12,
                               color: 'black',
-                              fontWeight: '500',
+                              fontWeight: 'bold',
                               // backgroundColor: 'green',
                             }}
                             numberOfLines={2}

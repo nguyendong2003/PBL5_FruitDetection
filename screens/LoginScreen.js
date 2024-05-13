@@ -39,7 +39,6 @@ import { app } from '../firebaseConfig';
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, onAuthStateChanged  } from "firebase/auth";
 
 export default function LoginScreen({ navigation }) {
-
   const auth = getAuth(app);
   // console.log(auth)
   const db = getFirestore(app);

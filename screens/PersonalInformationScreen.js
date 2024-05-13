@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  ActivityIndicator
 } from 'react-native';
 
 import {
@@ -144,7 +145,6 @@ export default function PersonalInformationScreen({ navigation }) {
   const [upLoading, setUpLoading] = useState(false)
   const uploadMedia = async() => {
     if(pickerImage) {
-      setUpLoading(true)
       try {
         const {uri} = await FileSystem.getInfoAsync(pickerImage);
         const blob = await new Promise((resolve, reject) => {
@@ -171,26 +171,7 @@ export default function PersonalInformationScreen({ navigation }) {
         await updateDoc(doc(db, "users", currentUser.id), {
           image: imageUrl
         });
-        // setImage(imageUrl);
-         // Cập nhật image trong state với URL mới
-        // await getDownloadURL(refStorage)
-        // .then((imageUrl) => {
-        //     const xhr = new XMLHttpRequest();
-        //     xhr.responseType = 'blob';
-        //     xhr.onload = (event) => {
-        //         const blob = xhr.response;
-        //     };
-        //     xhr.open('GET', imageUrl);
-        //     xhr.send();
-        //     console.log(imageUrl)
-        //     setImage(imageUrl)
-        //     // console.log(updatedUser)
-        // })
-        // .catch((error) => {
-        //     // Handle any errors
-        // });
 
-        setUpLoading(false);
     } catch(error) {
         console.log(error)
         setUpLoading(false)
@@ -204,6 +185,7 @@ export default function PersonalInformationScreen({ navigation }) {
     await uploadMedia()
     // console.log(updatedUser)
     await updateProfile()
+    
     alert('Update profile successfully');
     // navigation.navigate('Setting');
   };
@@ -586,4 +568,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    paddingTop:StatusBar.currentHeight,
+    justifyContent:"center",
+    alignItems:"center"
+  }
 });
