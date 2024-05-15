@@ -18,7 +18,8 @@ import {
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { useAuth } from './AuthContext';
 
@@ -80,29 +81,6 @@ export default function LoginScreen({ navigation }) {
   const { window } = dimensions;
   const windowWidth = window.width;
   const windowHeight = window.height;
-
-  // Back button on device
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Confirm exit app', 'Do you want to exit app?', [
-        {
-          text: 'No',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => BackHandler.exitApp() },
-      ]);
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, [navigation]);
-  //
 
   // console.log({ windowWidth, windowHeight });
 
@@ -200,6 +178,30 @@ export default function LoginScreen({ navigation }) {
       // Xử lý lỗi ở đây nếu có
     }
   };
+
+  // Back button on device to exit app
+  const backAction = () => {
+    Alert.alert('Confirm exit app', 'Do you want to exit app?', [
+      {
+        text: 'No',
+        onPress: () => null,
+        style: 'cancel',
+      },
+      { text: 'Yes', onPress: () => BackHandler.exitApp() },
+    ]);
+    return true;
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', backAction);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', backAction);
+      };
+    })
+  );
+  //
 
   return (
     <SafeAreaView style={styles.container}>

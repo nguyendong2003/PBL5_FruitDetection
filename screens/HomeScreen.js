@@ -25,7 +25,8 @@ import {
   Entypo,
 } from '@expo/vector-icons';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { useAuth } from './AuthContext';
 
@@ -117,27 +118,28 @@ export default function HomeScreen({ navigation }) {
   const windowWidth = window.width;
   const windowHeight = window.height;
 
-  // Back button on device
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Confirm log out', 'Do you want to log out?', [
-        {
-          text: 'No',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        { text: 'Yes', onPress: () => navigation.navigate('Login') },
-      ]);
-      return true;
-    };
+  // Back button on device to log out
+  const backAction = () => {
+    Alert.alert('Confirm log out', 'Do you want to log out?', [
+      {
+        text: 'No',
+        onPress: () => null,
+        style: 'cancel',
+      },
+      { text: 'Yes', onPress: () => navigation.navigate('Login') },
+    ]);
+    return true;
+  };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    return () => backHandler.remove();
-  }, [navigation]);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', backAction);
+      };
+    })
+  );
   //
 
   return (

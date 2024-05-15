@@ -17,6 +17,7 @@ import {
   PermissionsAndroid,
   Modal,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 
 import {
@@ -482,7 +483,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: StatusBar.currentHeight,
+    marginTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',

@@ -6,8 +6,11 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  BackHandler,
+  Alert,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
