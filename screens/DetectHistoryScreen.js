@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -25,11 +24,22 @@ import { useState, useEffect } from 'react';
 // fruit.json
 import resultDetectFruit from '../data/result_detect_fruit.json';
 import { useAuth } from './AuthContext';
-import { getFirestore, collection, addDoc, deleteDoc, where, doc ,query, getDocs, updateDoc, orderBy } from "firebase/firestore"; 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  where,
+  doc,
+  query,
+  getDocs,
+  updateDoc,
+  orderBy,
+} from 'firebase/firestore';
 import { app } from '../firebaseConfig';
 export default function DetectHistoryScreen({ navigation }) {
   // const [search, setSearch] = useState('');
-  const db = getFirestore(app)
+  const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -42,14 +52,17 @@ export default function DetectHistoryScreen({ navigation }) {
     return () => subscription?.remove();
   });
 
-  const [listDetection, setListDetection] = useState([])
+  const [listDetection, setListDetection] = useState([]);
   useEffect(() => {
-    getListDetection()
-  }, [])
+    getListDetection();
+  }, []);
 
-  const getListDetection = async() => {
+  const getListDetection = async () => {
     setListDetection([]);
-    const q = query(collection(db, 'users', currentUser.id, "detections"), orderBy('date', 'desc'))
+    const q = query(
+      collection(db, 'users', currentUser.id, 'detections'),
+      orderBy('date', 'desc')
+    );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       // console.log(doc.id, " => ", doc.data());
@@ -57,7 +70,7 @@ export default function DetectHistoryScreen({ navigation }) {
     });
 
     // console.log(listDetection)
-  }
+  };
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
   //     // Reset state when screen gets focused again
@@ -99,7 +112,8 @@ export default function DetectHistoryScreen({ navigation }) {
             data={listDetection}
             renderItem={({ item }) => {
               return (
-                <Pressable
+                <TouchableOpacity
+                  activeOpacity={0.5}
                   onPress={() =>
                     navigation.navigate('DetectFruitDetail', {
                       fruit: item,
@@ -147,7 +161,7 @@ export default function DetectHistoryScreen({ navigation }) {
                           // width: 100,
                           // height: 100,
                         }}
-                        resizeMode='contain'
+                        resizeMode="contain"
                       />
                     </View>
 
@@ -162,7 +176,9 @@ export default function DetectHistoryScreen({ navigation }) {
                         Output
                       </Text>
                       <Image
-                        source={{ uri:"data:image/jpg;base64," + item?.image_output }}
+                        source={{
+                          uri: 'data:image/jpg;base64,' + item?.image_output,
+                        }}
                         // source={require('../assets/banana_400.jpg')}
                         // source={require('../assets/23.jpg')}
                         style={{
@@ -173,11 +189,11 @@ export default function DetectHistoryScreen({ navigation }) {
                           // height: 100,
                           // width: '100%',
                         }}
-                        resizeMode='contain'
+                        resizeMode="contain"
                       />
                     </View>
                   </View>
-                </Pressable>
+                </TouchableOpacity>
               );
             }}
             // keyExtractor={(item, index) => item?.id.toString()}

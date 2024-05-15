@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -16,6 +15,8 @@ import {
   Dimensions,
   FlatList,
   PermissionsAndroid,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -25,6 +26,7 @@ import {
   Ionicons,
   Feather,
   Entypo,
+  AntDesign,
 } from '@expo/vector-icons';
 
 import { useState, useEffect, useRef } from 'react';
@@ -32,18 +34,36 @@ import { useAuth } from './AuthContext';
 
 // Upload image
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from "expo-file-system"
-import {decode, encode} from 'base-64'
+import * as FileSystem from 'expo-file-system';
+import { decode, encode } from 'base-64';
 // Camera
-import { Camera, CameraType} from 'expo-camera/legacy';
-import axios from "axios";
-import { getFirestore, collection, addDoc, deleteDoc, where, doc ,query, getDocs, updateDoc } from "firebase/firestore"; 
-import {getStorage, ref, getDownloadURL, uploadBytes, uploadString } from "firebase/storage";
+import { Camera, CameraType } from 'expo-camera/legacy';
+import axios from 'axios';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  where,
+  doc,
+  query,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytes,
+  uploadString,
+} from 'firebase/storage';
 import { app } from '../firebaseConfig';
 // import { CameraType } from 'expo-camera/build/legacy/Camera.types';
 export default function DetectScreen({ navigation, route }) {
-  const storage = getStorage()
-  const db = getFirestore(app)
+  const [isLoading, setIsLoading] = useState(false);
+
+  const storage = getStorage();
+  const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
@@ -63,18 +83,6 @@ export default function DetectScreen({ navigation, route }) {
     });
     return () => subscription?.remove();
   }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // Reset state when screen gets focused again
-  //     setPhoto(null);
-  //     setImage(null);
-  //     setShowCamera(false); // Assuming you want to hide camera when screen is focused again
-  //   });
-
-  //   return unsubscribe;
-  // }, [navigation]);
-
   const { window } = dimensions;
   const windowWidth = window.width;
   const windowHeight = window.height;
@@ -93,7 +101,7 @@ export default function DetectScreen({ navigation, route }) {
       quality: 1,
     });
 
-    // console.log(result);  
+    // console.log(result);
 
     if (!result.canceled) {
       setImage(result);
@@ -110,7 +118,13 @@ export default function DetectScreen({ navigation, route }) {
 
   // console.log(type)
   function toggleCameraType() {
-    setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+    setType((current) =>
+      current === CameraType.back ? CameraType.front : CameraType.back
+    );
+  }
+
+  function turnOffCamera() {
+    setShowCamera(false);
   }
 
   let takePicture = async () => {
@@ -133,125 +147,130 @@ export default function DetectScreen({ navigation, route }) {
     setShowCamera(true);
   };
 
-  const [imageOutput, setImageOutput] = useState(null)
+  const [imageOutput, setImageOutput] = useState(null);
   const handleDetect = () => {
-    if(image) {
-      detectByImage()
-    } 
-    if(photo) {
-      detectByPhoto()
+    if (image) {
+      setIsLoading(true);
+      detectByImage();
     }
-  }
+    if (photo) {
+      setIsLoading(true);
+      detectByPhoto();
+    }
+  };
 
-  const detectByImage = async() => {
-    if(image) {
+  const detectByImage = async () => {
+    if (image) {
       try {
         const uri = image.assets[0].uri;
-        const formData = new FormData()
-        formData.append("image", {
+        const formData = new FormData();
+        formData.append('image', {
           uri: uri,
           type: image.assets[0].mimeType,
-          name: "image"
-        })
+          name: 'image',
+        });
         // console.log("Image: ", formData)
         try {
-          fetch("https://cloud-server-detect.onrender.com/detect", {
-            method: "POST",
+          fetch('https://cloud-server-detect.onrender.com/detect', {
+            method: 'POST',
             body: formData,
             headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+              'Content-Type': 'multipart/form-data',
+            },
           })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!Object.prototype.hasOwnProperty.call(data, "failed")) {
-              setImageOutput(data.image)
-              // console.log((new Date(Date.now())).toLocaleDateString())
-              //uploadImageBase64(image.assets[0].mimeType,uri.substring(uri.lastIndexOf('/') + 1), data.image)
-              uploadToFirebase(uri, data.image)
-            } else {
-              alert(data.failed);
-            }
-          })
-          .catch((error) => console.log(error))
-        }catch(error) {
-          console.log(error)
+            .then((res) => res.json())
+            .then((data) => {
+              if (!Object.prototype.hasOwnProperty.call(data, 'failed')) {
+                setImageOutput(data.image);
+                // console.log((new Date(Date.now())).toLocaleDateString())
+                //uploadImageBase64(image.assets[0].mimeType,uri.substring(uri.lastIndexOf('/') + 1), data.image)
+                uploadToFirebase(uri, data.image);
+                setIsLoading(false);
+              } else {
+                setIsLoading(false);
+                alert(data.failed);
+              }
+            })
+            .catch((error) => console.log(error));
+        } catch (error) {
+          console.log(error);
         }
-      } catch(error) {
-          console.log(error)
+      } catch (error) {
+        console.log(error);
       }
     }
-    
-  }
+  };
 
-  const uploadToFirebase = async(input, output) => {
-    const image_input = await uploadImageUri(input)
+  const uploadToFirebase = async (input, output) => {
+    const image_input = await uploadImageUri(input);
     const docRef = await addDoc(
       collection(db, 'users', currentUser.id, 'detections'),
       {
-        date: (new Date()).toLocaleString(),
-        image_input : image_input,
-        image_output : output
+        date: new Date().toLocaleString(),
+        image_input: image_input,
+        image_output: output,
       }
     );
-  }
+  };
 
-  const uploadImageUri = async(image) => {
-    const {uri} = await FileSystem.getInfoAsync(image);
+  const uploadImageUri = async (image) => {
+    const { uri } = await FileSystem.getInfoAsync(image);
     const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = () => {
-            resolve(xhr.response)
-        }
-        xhr.onerror = (e) => {
-            reject(new TypeError('Network request failed'))
-        }
-        xhr.responseType = 'blob'
-        xhr.open('GET', uri, true)
-        xhr.send(null)
-    })
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => {
+        resolve(xhr.response);
+      };
+      xhr.onerror = (e) => {
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
 
-    const fileName = image.substring(image.lastIndexOf('/') + 1)
-    const refStorage = ref(storage, "detection/" + fileName)
+    const fileName = image.substring(image.lastIndexOf('/') + 1);
+    const refStorage = ref(storage, 'detection/' + fileName);
     await uploadBytes(refStorage, blob).then((snapshot) => {
-        // console.log(snapshot);
+      // console.log(snapshot);
     });
     const imageUrl = await getDownloadURL(refStorage);
-    return imageUrl
-  }
+    return imageUrl;
+  };
 
-  const detectByPhoto = async() => {
-    if(photo) {
-      const formData = new FormData()
-        formData.append("image", {
-          uri: photo.uri,
-          type: "image/jpg",
-          name: "image"
-        })
+  const detectByPhoto = async () => {
+    if (photo) {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: photo.uri,
+        type: 'image/jpg',
+        name: 'image',
+      });
       try {
-        fetch("https://cloud-server-detect.onrender.com/detect", {
-            method: "POST",
-            body: formData,
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
+        fetch('https://cloud-server-detect.onrender.com/detect', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
           .then((res) => res.json())
           .then((data) => {
             // console.log(data)
-            if (!Object.prototype.hasOwnProperty.call(data, "failed")) {
-              setImageOutput(data.image)
-              uploadToFirebase(photo.uri, data.image)
+            if (!Object.prototype.hasOwnProperty.call(data, 'failed')) {
+              setImageOutput(data.image);
+              uploadToFirebase(photo.uri, data.image);
+              setIsLoading(false);
             } else {
+              setIsLoading(false);
               alert(data.failed);
             }
           })
-          .catch((error) => console.log(error))
+          .catch((error) => console.log(error));
       } catch (error) {
         console.error(error);
       }
     }
-  }
+  };
 
   if (showCamera) {
     return (
@@ -282,31 +301,55 @@ export default function DetectScreen({ navigation, route }) {
               ref={cameraRef}
               ratio={'1:1'}
             ></Camera>
-            <Pressable
+            <View
               style={{
-                position: 'absolute',
-                top: windowWidth + 150,
-                left: windowWidth / 2 - 24,
+                marginTop: 150,
+                flexDirection: 'row',
+                // justifyContent: 'space-around',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-              onPress={takePicture}
             >
-              <Entypo name="camera" size={48} color="black" />
-            </Pressable>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                style={{
+                  margin: 20,
+                }}
+                onPress={turnOffCamera}
+              >
+                <AntDesign name="back" size={48} color="black" />
+              </TouchableOpacity>
 
-            <Pressable
-              style={{
-                position: 'absolute',
-                top: windowWidth + 150,
-                left: windowWidth / 2 + 80,
-              }}
-              onPress={toggleCameraType}
-            >
-              <MaterialIcons
-                name="flip-camera-android"
-                size={48}
-                color="black"
-              />
-            </Pressable>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                style={{
+                  // position: 'absolute',
+                  // top: windowWidth + 150,
+                  // left: windowWidth / 2 - 24,
+                  margin: 20,
+                }}
+                onPress={takePicture}
+              >
+                <Entypo name="camera" size={48} color="black" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.5}
+                style={{
+                  // position: 'absolute',
+                  // top: windowWidth + 150,
+                  // left: windowWidth / 2 + 80,
+                  margin: 20,
+                }}
+                onPress={toggleCameraType}
+              >
+                <MaterialIcons
+                  name="flip-camera-android"
+                  size={48}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -314,6 +357,14 @@ export default function DetectScreen({ navigation, route }) {
   }
   return (
     <SafeAreaView style={styles.container}>
+      <Modal transparent={true} visible={isLoading}>
+        <View style={styles.modalBackground}>
+          <View style={styles.activityIndicatorWrapper}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loadingText}>Detecting</Text>
+          </View>
+        </View>
+      </Modal>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -333,7 +384,7 @@ export default function DetectScreen({ navigation, route }) {
                 // source={{ uri: image }}
                 // source={{ uri: 'data:image/jpg;base64,' + photo.base64 }}
                 // style={{ width: windowWidth, height: windowWidth }}
-                source = {{uri: photo.uri}}
+                source={{ uri: photo.uri }}
                 style={{
                   width: windowWidth,
                   height: windowWidth,
@@ -342,7 +393,7 @@ export default function DetectScreen({ navigation, route }) {
               />
             ) : image ? (
               <Image
-                source={{ uri : image.assets[0].uri }}
+                source={{ uri: image.assets[0].uri }}
                 // style={{ width: windowWidth, height: windowWidth }}
                 style={{ width: windowWidth, height: windowWidth }}
                 resizeMode="contain"
@@ -358,12 +409,13 @@ export default function DetectScreen({ navigation, route }) {
               alignItems: 'center',
             }}
           >
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => handleDetect()}
             >
               <Text style={styles.buttonText}>Detect</Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <View
               style={{
@@ -373,28 +425,39 @@ export default function DetectScreen({ navigation, route }) {
                 justifyContent: 'space-around',
               }}
             >
-              <Pressable style={{ alignItems: 'center' }} onPress={pickImage}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                style={{ alignItems: 'center' }}
+                onPress={pickImage}
+              >
                 <Feather name="upload" size={48} color="black" />
                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
                   Upload image
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable style={{ alignItems: 'center' }} onPress={openCamera}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                style={{ alignItems: 'center' }}
+                onPress={openCamera}
+              >
                 <Feather name="camera" size={48} color="black" />
                 <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
                   Take photo
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
-          <View style = {styles.bottomContainer}>
-            <Text 
-              style = {{ 
-                fontSize: 20, fontWeight: 'bold',
-                marginBottom: 15
+          <View style={styles.bottomContainer}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                marginBottom: 15,
               }}
-            >Result Detection: </Text>
+            >
+              Result Detection:{' '}
+            </Text>
             {imageOutput && (
               <Image
                 // source={{ uri: image }}
@@ -404,7 +467,6 @@ export default function DetectScreen({ navigation, route }) {
                   width: windowWidth,
                   height: windowWidth,
                 }}
-                
                 resizeMode="contain"
               />
             )}
@@ -420,7 +482,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: 'white',
-    // paddingTop: StatusBar.currentHeight,
+    paddingTop: StatusBar.currentHeight,
   },
   scrollContainer: {
     alignItems: 'center',
@@ -448,9 +510,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomContainer: {
-    width: "100%",
-    alignItems:"center",
+    width: '100%',
+    alignItems: 'center',
     marginTop: 20,
-    marginBottom: 20
-  }
+    marginBottom: 20,
+  },
+
+  // Modal
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: '#FFFFFF',
+    height: 100,
+    width: 100,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    marginTop: 10,
+    textAlign: 'center',
+  },
 });

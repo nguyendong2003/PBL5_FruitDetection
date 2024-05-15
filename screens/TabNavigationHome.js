@@ -15,6 +15,7 @@ import {
   Platform,
   Dimensions,
   FlatList,
+  BackHandler,
 } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -55,7 +56,6 @@ export default function TabNavigationHome({ navigation }) {
   const { window } = dimensions;
   const windowWidth = window.width;
   const windowHeight = window.height;
-
   // console.log({ windowWidth, windowHeight });
 
   return (

@@ -7,14 +7,14 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal,
 } from 'react-native';
 
 import {
@@ -31,24 +31,38 @@ import { RadioButton } from 'react-native-paper';
 
 import { useAuth } from './AuthContext';
 
-import { getFirestore, collection, setDoc, deleteDoc, where, doc ,query, getDocs, updateDoc } from "firebase/firestore"; 
-import {getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import {
+  getFirestore,
+  collection,
+  setDoc,
+  deleteDoc,
+  where,
+  doc,
+  query,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { app } from '../firebaseConfig';
 // Upload image
-import * as FileSystem from "expo-file-system"
+import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function PersonalInformationScreen({ navigation }) {
-  const db = getFirestore(app)
+  const [isLoading, setIsLoading] = useState(false);
+
+  const db = getFirestore(app);
   const { currentUser, setUser } = useAuth();
 
   const [updatedUser, setUpdatedUser] = useState(currentUser);
-  
+
   const [fullname, setFullname] = useState(currentUser?.fullname);
   const [email, setEmail] = useState(currentUser?.email);
   const [phone, setPhone] = useState(currentUser?.phone);
   const [address, setAddress] = useState(currentUser?.address);
-  const [gender, setGender] = useState((currentUser?.gender == undefined) ? 'no' : currentUser?.gender);
+  const [gender, setGender] = useState(
+    currentUser?.gender == undefined ? 'no' : currentUser?.gender
+  );
 
   // pick date
   const [dateofbirth, setDateofbirth] = useState(
@@ -62,7 +76,7 @@ export default function PersonalInformationScreen({ navigation }) {
     setShowDatePicker(false); // Ẩn DateTimePicker sau khi chọn hoặc hủy bỏ
     if (event.type === 'set' && selectedDate) {
       // Nếu người dùng chọn ngày và nhấn OK
-      setDateofbirth(selectedDate); 
+      setDateofbirth(selectedDate);
     }
   };
 
@@ -76,7 +90,7 @@ export default function PersonalInformationScreen({ navigation }) {
 
   // image
   const [image, setImage] = useState(currentUser?.image);
-  const [pickerImage, setPickerImage] = useState(currentUser?.image)
+  const [pickerImage, setPickerImage] = useState(currentUser?.image);
   // console.log(image)
   const pickImage = async () => {
     // no permissions request is necessary for launching the image library
@@ -95,8 +109,6 @@ export default function PersonalInformationScreen({ navigation }) {
     }
   };
 
-
-
   const [dimensions, setDimensions] = useState({
     window: Dimensions.get('window'),
   });
@@ -107,7 +119,7 @@ export default function PersonalInformationScreen({ navigation }) {
     });
     return () => subscription?.remove();
   });
-  
+
   // Hidden bottom navigation when navigate to this screen
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -136,69 +148,78 @@ export default function PersonalInformationScreen({ navigation }) {
   //   return unsubscribe;
   // }, [navigation]);
 
-
   const { window } = dimensions;
   const windowWidth = window.width;
   const windowHeight = window.height;
 
-  const storage = getStorage()
-  const [upLoading, setUpLoading] = useState(false)
-  const uploadMedia = async() => {
-    if(pickerImage) {
+  const storage = getStorage();
+  const [upLoading, setUpLoading] = useState(false);
+  const uploadMedia = async () => {
+    if (pickerImage) {
       try {
-        const {uri} = await FileSystem.getInfoAsync(pickerImage);
+        const { uri } = await FileSystem.getInfoAsync(pickerImage);
         const blob = await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = () => {
-                resolve(xhr.response)
-            }
-            xhr.onerror = (e) => {
-                reject(new TypeError('Network request failed'))
-            }
-            xhr.responseType = 'blob'
-            xhr.open('GET', uri, true)
-            xhr.send(null)
-        })
+          const xhr = new XMLHttpRequest();
+          xhr.onload = () => {
+            resolve(xhr.response);
+          };
+          xhr.onerror = (e) => {
+            reject(new TypeError('Network request failed'));
+          };
+          xhr.responseType = 'blob';
+          xhr.open('GET', uri, true);
+          xhr.send(null);
+        });
 
-        const fileName = pickerImage.substring(pickerImage.lastIndexOf('/') + 1)
-        const refStorage = ref(storage, "users/" + fileName)
+        const fileName = pickerImage.substring(
+          pickerImage.lastIndexOf('/') + 1
+        );
+        const refStorage = ref(storage, 'users/' + fileName);
         await uploadBytes(refStorage, blob).then((snapshot) => {
-            // console.log(snapshot);
+          // console.log(snapshot);
         });
         const imageUrl = await getDownloadURL(refStorage);
 
         // console.log(imageUrl)
-        await updateDoc(doc(db, "users", currentUser.id), {
-          image: imageUrl
+        await updateDoc(doc(db, 'users', currentUser.id), {
+          image: imageUrl,
         });
-
-    } catch(error) {
-        console.log(error)
-        setUpLoading(false)
+      } catch (error) {
+        console.log(error);
+        setUpLoading(false);
+      }
     }
-    }
-  }
- 
+  };
 
-  const handleUpdateProfile = async() => {
+  const handleUpdateProfile = async () => {
+    setIsLoading(true);
     // setGenderOfUpdatedUser()
-    await uploadMedia()
+    await uploadMedia();
     // console.log(updatedUser)
-    await updateProfile()
-    
+    await updateProfile();
+
+    setIsLoading(false);
     alert('Update profile successfully');
     // navigation.navigate('Setting');
   };
 
   useEffect(() => {
-    handleSetUpdatedUser()
-  }, [fullname, phone, dateofbirth, gender, address])
+    handleSetUpdatedUser();
+  }, [fullname, phone, dateofbirth, gender, address]);
 
   const handleSetUpdatedUser = () => {
-    const newUser = {fullname, phone, dateofbirth: !isNaN(dateofbirth) ? dateofbirth.toISOString().split("T")[0]: "", gender, address}
-  
-    setUpdatedUser(newUser)
-  }
+    const newUser = {
+      fullname,
+      phone,
+      dateofbirth: !isNaN(dateofbirth)
+        ? dateofbirth.toISOString().split('T')[0]
+        : '',
+      gender,
+      address,
+    };
+
+    setUpdatedUser(newUser);
+  };
 
   // const setGenderOfUpdatedUser = () => {
   //   if(Object.keys(updatedUser).includes(gender)) {
@@ -209,10 +230,18 @@ export default function PersonalInformationScreen({ navigation }) {
   // }
 
   const updateProfile = async () => {
-    await updateDoc(doc(db, "users", currentUser.id), updatedUser);
-  }
+    await updateDoc(doc(db, 'users', currentUser.id), updatedUser);
+  };
   return (
     <SafeAreaView style={styles.container}>
+      <Modal transparent={true} visible={isLoading}>
+        <View style={styles.modalBackground}>
+          <View style={styles.activityIndicatorWrapper}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loadingText}>Updating</Text>
+          </View>
+        </View>
+      </Modal>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -257,12 +286,13 @@ export default function PersonalInformationScreen({ navigation }) {
                   />
                 )}
 
-                <Pressable
+                <TouchableOpacity
+                  activeOpacity={0.5}
                   style={{ position: 'absolute', top: 190, left: 190 }}
                   onPress={pickImage}
                 >
                   <FontAwesome5 name="edit" size={24} color="blue" />
-                </Pressable>
+                </TouchableOpacity>
 
                 {/* <Text
                   style={{
@@ -284,7 +314,7 @@ export default function PersonalInformationScreen({ navigation }) {
               value={fullname}
               //   onChangeText={setUsername}
               onChangeText={(text) => {
-                setFullname(text)
+                setFullname(text);
                 // setFullname((fullname) => {
                 //   fullname = text;
                 //   // if(Object.keys(updatedUser).includes(fullname)) {
@@ -300,10 +330,10 @@ export default function PersonalInformationScreen({ navigation }) {
 
             <Text style={styles.labelForm}>Email address</Text>
             <TextInput
-              style={[{color: "#65737E"},styles.inputField]}
+              style={[{ color: '#65737E' }, styles.inputField]}
               value={email}
               onChangeText={(text) => {
-                setEmail(text)
+                setEmail(text);
                 // setEmail((email) => {
                 //   email = text;
                 //   // if(Object.keys(updatedUser).includes(email)) {
@@ -314,7 +344,7 @@ export default function PersonalInformationScreen({ navigation }) {
                 // });
               }}
               placeholder="Enter your email address"
-              editable = {false}
+              editable={false}
             />
 
             <Text style={styles.labelForm}>Phone number</Text>
@@ -323,7 +353,7 @@ export default function PersonalInformationScreen({ navigation }) {
               value={phone}
               keyboardType="numeric"
               onChangeText={(text) => {
-                setPhone(text)
+                setPhone(text);
                 // setPhone((phone) => {
                 //   phone = text;
                 //   // if(Object.keys(updatedUser).includes(phone)) {
@@ -337,7 +367,7 @@ export default function PersonalInformationScreen({ navigation }) {
             />
 
             <Text style={styles.labelForm}>Date of birth</Text>
-            <Pressable onPress={toggleDatePicker}>
+            <TouchableOpacity activeOpacity={0.5} onPress={toggleDatePicker}>
               <View style={[styles.fieldContainer]}>
                 <Text>
                   {!isNaN(dateofbirth.getDate())
@@ -351,7 +381,9 @@ export default function PersonalInformationScreen({ navigation }) {
                 <FontAwesome name="calendar" size={24} color="#09B44C" />
                 {showDatePicker && (
                   <DateTimePicker
-                    value={isNaN(dateofbirth.getDate()) ? new Date() : dateofbirth}
+                    value={
+                      isNaN(dateofbirth.getDate()) ? new Date() : dateofbirth
+                    }
                     mode={'date'}
                     is24Hour={true}
                     full="default"
@@ -359,7 +391,7 @@ export default function PersonalInformationScreen({ navigation }) {
                   />
                 )}
               </View>
-            </Pressable>
+            </TouchableOpacity>
 
             <Text style={styles.labelForm}>Gender</Text>
             <View style={styles.radioGroup}>
@@ -386,7 +418,9 @@ export default function PersonalInformationScreen({ navigation }) {
               <View style={styles.radioButton}>
                 <RadioButton
                   value="no"
-                  status={(gender === 'no' || gender == null) ? 'checked' : 'unchecked'}
+                  status={
+                    gender === 'no' || gender == null ? 'checked' : 'unchecked'
+                  }
                   onPress={() => setGender('no')}
                   color="#007BFF"
                 />
@@ -399,7 +433,7 @@ export default function PersonalInformationScreen({ navigation }) {
               style={styles.inputField}
               value={address}
               onChangeText={(text) => {
-                setAddress(text)
+                setAddress(text);
                 // setAddress((address) => {
                 //   address = text;
                 //   // if(Object.keys(updatedUser).includes(address)) {
@@ -412,12 +446,13 @@ export default function PersonalInformationScreen({ navigation }) {
               placeholder="Enter your address"
             />
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => handleUpdateProfile()}
             >
               <Text style={styles.buttonText}>Save</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -571,8 +606,30 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    paddingTop:StatusBar.currentHeight,
-    justifyContent:"center",
-    alignItems:"center"
-  }
+    paddingTop: StatusBar.currentHeight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Modal
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: '#FFFFFF',
+    height: 100,
+    width: 100,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    marginTop: 10,
+    textAlign: 'center',
+  },
 });

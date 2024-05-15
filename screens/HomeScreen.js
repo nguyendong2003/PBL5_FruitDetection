@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -15,6 +14,7 @@ import {
   Platform,
   Dimensions,
   FlatList,
+  BackHandler,
 } from 'react-native';
 
 import {
@@ -39,14 +39,14 @@ import {
   query,
 } from 'firebase/firestore';
 
-import { app} from '../firebaseConfig';
+import { app } from '../firebaseConfig';
 
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut } from 'firebase/auth';
 export default function HomeScreen({ navigation }) {
-  const auth = getAuth(app)
+  const auth = getAuth(app);
   const db = getFirestore(app);
   const [fruits, setFruits] = useState([]);
-  
+
   const { currentUser, setUser } = useAuth();
   //
   useEffect(() => {
@@ -117,6 +117,29 @@ export default function HomeScreen({ navigation }) {
   const windowWidth = window.width;
   const windowHeight = window.height;
 
+  // Back button on device
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Confirm log out', 'Do you want to log out?', [
+        {
+          text: 'No',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => navigation.navigate('Login') },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+  //
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -128,13 +151,13 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.topContainer}>
             <View>
               <Text style={{ fontSize: 20 }}>
-                Welcome        
+                Welcome
                 <Image
                   source={require('../assets/hand3.png')}
-                  style={{ width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                 />
               </Text>
-              
+
               <Text
                 style={{ color: 'black', fontWeight: 'bold', fontSize: 20 }}
               >
@@ -144,7 +167,10 @@ export default function HomeScreen({ navigation }) {
             </View>
 
             <View style={{ alignItems: 'flex-end' }}>
-              <Pressable onPress={() => setIsAvatarFocus(!isAvatarFocus)}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => setIsAvatarFocus(!isAvatarFocus)}
+              >
                 {currentUser?.image ? (
                   <Image
                     // source={require('../assets/41.jpg')}
@@ -161,7 +187,7 @@ export default function HomeScreen({ navigation }) {
                     size={60}
                   />
                 )}
-              </Pressable>
+              </TouchableOpacity>
 
               <View
                 style={{
@@ -183,7 +209,8 @@ export default function HomeScreen({ navigation }) {
                   elevation: 5,
                 }}
               >
-                <Pressable
+                <TouchableOpacity
+                  activeOpacity={0.5}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -203,8 +230,9 @@ export default function HomeScreen({ navigation }) {
                   >
                     Profile
                   </Text>
-                </Pressable>
-                <Pressable
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.5}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -213,11 +241,9 @@ export default function HomeScreen({ navigation }) {
                     borderColor: '#d6d7db',
                   }}
                   onPress={() => {
-                    signOut(auth).then(()=> {
-
-                    }).catch((error)=> {
-
-                    })
+                    signOut(auth)
+                      .then(() => {})
+                      .catch((error) => {});
                     setUser(null);
                     setIsAvatarFocus(false);
                     navigation.navigate('Login');
@@ -229,7 +255,7 @@ export default function HomeScreen({ navigation }) {
                   >
                     Logout
                   </Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -256,7 +282,8 @@ export default function HomeScreen({ navigation }) {
             data={filteredFruitList}
             renderItem={({ item }) => {
               return (
-                <Pressable
+                <TouchableOpacity
+                  activeOpacity={0.5}
                   onPress={() =>
                     navigation.navigate('FruitDetail', { fruit: item })
                   }
@@ -285,7 +312,7 @@ export default function HomeScreen({ navigation }) {
                       <Text style={styles.cardText}>{item.name}</Text>
                     </View>
                   </View>
-                </Pressable>
+                </TouchableOpacity>
               );
             }}
             numColumns={2}

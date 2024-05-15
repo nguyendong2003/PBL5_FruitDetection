@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -20,13 +19,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from './AuthContext';
 import { useState, useEffect } from 'react';
 
-import { getFirestore, updateDoc, doc } from "firebase/firestore"; 
+import { getFirestore, updateDoc, doc } from 'firebase/firestore';
 import { app } from '../firebaseConfig';
-import { getAuth, updatePassword, reauthenticateWithCredential, EmailAuthProvider} from "firebase/auth";
+import {
+  getAuth,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from 'firebase/auth';
 export default function ChangePasswordScreen({ navigation }) {
   const auth = getAuth(app);
   const { currentUser } = useAuth();
-  const db = getFirestore(app)
+  const db = getFirestore(app);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -97,10 +101,9 @@ export default function ChangePasswordScreen({ navigation }) {
   const handleChangePassword = () => {
     let newErrors = {};
 
-    
     // if (!currentPassword) {
     //   newErrors['currentPassword'] = 'Current password cannot be empty';
-    // } 
+    // }
 
     // if(currentPassword && currentPassword !== currentUser.password) {
     //   // console.log(currentUser.password)
@@ -131,56 +134,67 @@ export default function ChangePasswordScreen({ navigation }) {
     } else {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
-      
+
       const user = auth.currentUser;
       // console.log(user)
-      updatePassword(user, newPassword).then(() => {
-        // updatePasswordFirestore()
-        
-        alert('Change password successfully');
-        setCurrentPassword('')
-        setNewPassword('')
-        setConfirmNewPassword('')
-      }).catch((error) => {
-        console.log(error.code)
-        if(error.code === "auth/weak-password") {
-          Alert.alert('Invalid credentials', "Password should be at least 6 characters")
-        } else if(error.code === "auth/requires-recent-login") {
-          const user = auth.currentUser;
+      updatePassword(user, newPassword)
+        .then(() => {
+          // updatePasswordFirestore()
 
-          // TODO(you): prompt the user to re-provide their sign-in credentials
-          let credential = EmailAuthProvider.credential(
-            user.email,
-            currentUser.password
-          );
-          reauthenticateWithCredential(user, credential).then(() => {
-            updatePassword(user, newPassword).then(() => {
-              // updatePasswordFirestore()
-              
-              alert('Change password successfully');
-              setCurrentPassword('')
-              setNewPassword('')
-              setConfirmNewPassword('')
-            })
-            .catch((error) => {
-              if(error.code === "auth/weak-password") {
-                Alert.alert('Invalid credentials', "Password should be at least 6 characters")
-              } 
-            })
-          }).catch((error) => {
-            // An error ocurred
-            // ...
-          });
-        }
-      });
+          alert('Change password successfully');
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmNewPassword('');
+        })
+        .catch((error) => {
+          console.log(error.code);
+          if (error.code === 'auth/weak-password') {
+            Alert.alert(
+              'Invalid credentials',
+              'Password should be at least 6 characters'
+            );
+          } else if (error.code === 'auth/requires-recent-login') {
+            const user = auth.currentUser;
+
+            // TODO(you): prompt the user to re-provide their sign-in credentials
+            let credential = EmailAuthProvider.credential(
+              user.email,
+              currentUser.password
+            );
+            reauthenticateWithCredential(user, credential)
+              .then(() => {
+                updatePassword(user, newPassword)
+                  .then(() => {
+                    // updatePasswordFirestore()
+
+                    alert('Change password successfully');
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmNewPassword('');
+                  })
+                  .catch((error) => {
+                    if (error.code === 'auth/weak-password') {
+                      Alert.alert(
+                        'Invalid credentials',
+                        'Password should be at least 6 characters'
+                      );
+                    }
+                  });
+              })
+              .catch((error) => {
+                // An error ocurred
+                // ...
+              });
+          }
+        });
     }
   };
 
-  const updatePasswordFirestore = async() => {
-    await updateDoc(doc(db, "users", currentUser.id), {
-      password: newPassword
+  const updatePasswordFirestore = async () => {
+    await updateDoc(doc(db, 'users', currentUser.id), {
+      password: newPassword,
     });
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -215,7 +229,7 @@ export default function ChangePasswordScreen({ navigation }) {
                 }}
                 placeholder="Enter your current password"
               /> */}
-              {/* <MaterialCommunityIcons
+            {/* <MaterialCommunityIcons
                 name={showCurrentPassword ? 'eye-off' : 'eye'}
                 size={24}
                 color="#aaa"
@@ -304,12 +318,13 @@ export default function ChangePasswordScreen({ navigation }) {
               </Text>
             ) : null}
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => handleChangePassword()}
             >
               <Text style={styles.buttonText}>Save</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>

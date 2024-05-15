@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -33,7 +32,7 @@ import {
 import { useState, useEffect, useRef } from 'react';
 
 import { useAuth } from './AuthContext';
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut } from 'firebase/auth';
 import { app } from '../firebaseConfig';
 
 export default function SettingScreen({ navigation, route }) {
@@ -41,11 +40,13 @@ export default function SettingScreen({ navigation, route }) {
   const { currentUser, setUser } = useAuth();
 
   const handleLogout = () => {
-    signOut(auth).then(() => {
-      // Sign-out successful.
-    }).catch((error) => {
-      // An error happened.
-    });
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
     setUser(null);
     navigation.navigate('Login');
   };
@@ -128,7 +129,8 @@ export default function SettingScreen({ navigation, route }) {
               alignItems: 'center',
             }}
           >
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => navigation.navigate('PersonalInformation')}
             >
@@ -141,9 +143,10 @@ export default function SettingScreen({ navigation, route }) {
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Personal Information
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => navigation.navigate('ChangePassword')}
             >
@@ -156,9 +159,10 @@ export default function SettingScreen({ navigation, route }) {
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Change password
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => navigation.navigate('DetectHistory')}
             >
@@ -171,9 +175,10 @@ export default function SettingScreen({ navigation, route }) {
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Detection history
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => navigation.navigate('FavouriteFruit')}
             >
@@ -186,9 +191,13 @@ export default function SettingScreen({ navigation, route }) {
               <Text style={[styles.buttonText, { flex: 4 }]}>
                 Favourite fruits
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable style={styles.button} onPress={handleLogout}>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.button}
+              onPress={handleLogout}
+            >
               <Entypo
                 style={{ flex: 1 }}
                 name="log-out"
@@ -196,7 +205,7 @@ export default function SettingScreen({ navigation, route }) {
                 color="#dc3545"
               />
               <Text style={[styles.buttonText, { flex: 4 }]}>Log out</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>

@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -35,7 +34,7 @@ import {
   getDoc,
   onSnapshot,
   query,
-  deleteDoc
+  deleteDoc,
 } from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
@@ -97,9 +96,9 @@ export default function FavouriteFruitScreen({ navigation }) {
     setFilteredFruitList(filteredList);
   }, [search, fruits, favoriteIds]);
 
-  const handleDeleteFruit = async(id_fruit) => {
-    deleteFavourite(id_fruit)
-  }
+  const handleDeleteFruit = async (id_fruit) => {
+    deleteFavourite(id_fruit);
+  };
 
   const deleteFavourite = async (id_fruit) => {
     try {
@@ -174,7 +173,8 @@ export default function FavouriteFruitScreen({ navigation }) {
             data={filteredFruitList}
             renderItem={({ item }) => {
               return (
-                <Pressable
+                <TouchableOpacity
+                  activeOpacity={0.5}
                   onPress={() =>
                     navigation.navigate('FavouriteFruitDetail', { fruit: item })
                   }
@@ -203,7 +203,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                         size={30}
                         color="red"
                         onPress={() => {
-                          handleDeleteFruit(item.id_fruit)
+                          handleDeleteFruit(item.id_fruit);
                         }}
                       />
                     </View>
@@ -214,7 +214,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                           width: (windowWidth - 32 - 80 - 40) / 2,
                           height: (windowWidth - 32 - 80 - 40) / 2,
                         }}
-                        resizeMode='center'
+                        resizeMode="center"
                       />
                       <View
                         style={{
@@ -316,7 +316,7 @@ export default function FavouriteFruitScreen({ navigation }) {
                       </View>
                     </View>
                   </View>
-                </Pressable>
+                </TouchableOpacity>
               );
             }}
             // numColumns={2}

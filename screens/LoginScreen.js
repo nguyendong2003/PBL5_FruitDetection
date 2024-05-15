@@ -7,13 +7,13 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  BackHandler,
 } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -32,11 +32,17 @@ import {
   onSnapshot,
   query,
   updateDoc,
-  doc
+  doc,
 } from 'firebase/firestore';
 
 import { app } from '../firebaseConfig';
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, onAuthStateChanged  } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  onAuthStateChanged,
+} from 'firebase/auth';
 
 export default function LoginScreen({ navigation }) {
   const auth = getAuth(app);
@@ -75,6 +81,29 @@ export default function LoginScreen({ navigation }) {
   const windowWidth = window.width;
   const windowHeight = window.height;
 
+  // Back button on device
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Confirm exit app', 'Do you want to exit app?', [
+        {
+          text: 'No',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+  //
+
   // console.log({ windowWidth, windowHeight });
 
   const toggleShowPassword = () => {
@@ -83,13 +112,16 @@ export default function LoginScreen({ navigation }) {
 
   const handleRegister = async () => {
     let newErrors = {};
-    const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+    const emailRegex = new RegExp(
+      /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
+      'gm'
+    );
     // Kiểm tra email
     if (!email) {
       newErrors['emailError'] = 'Email address cannot be empty';
     }
-    
-    if(email && !emailRegex.test(email)) {
+
+    if (email && !emailRegex.test(email)) {
       newErrors['emailInvalid'] = 'Email address not valid';
     }
 
@@ -105,57 +137,51 @@ export default function LoginScreen({ navigation }) {
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       setErrors({});
       signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            const uid = user.uid;
-            // console.log(user);
-            // ...
-          } else {
-          }
+        .then((userCredential) => {
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              const uid = user.uid;
+              // console.log(user);
+              // ...
+            } else {
+            }
+          });
+          getUser();
+        })
+        .catch((error) => {
+          // console.log(error.message)
+          Alert.alert('Invalid credentials', 'Email or password is incorrect');
         });
-        getUser()
-      })
-      .catch((error) => {
-        // console.log(error.message)
-        Alert.alert('Invalid credentials', 'Email or password is incorrect');
-      });
-      
     }
   };
 
   const handleResetPassword = () => {
     let newErrors = {};
-    const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+    const emailRegex = new RegExp(
+      /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
+      'gm'
+    );
     // Kiểm tra email
     if (!email) {
-      Alert.alert('Error','Email address cannot be empty');
-    } else if(email && !emailRegex.test(email)) {
-      Alert.alert('Error','Email address not valid');
+      Alert.alert('Error', 'Email address cannot be empty');
+    } else if (email && !emailRegex.test(email)) {
+      Alert.alert('Error', 'Email address not valid');
     } else {
-      Alert.alert('Not','Please check your email address and try again');
+      Alert.alert('Not', 'Please check your email address and try again');
       sendPasswordResetEmail(auth, email)
-      .then(() => {
-        
-      })
-      .catch((error) => {
-        const errorCode = error.code; 
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage)
-      });
-      
+        .then(() => {})
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+        });
     }
-  
-    
-  }
+  };
 
-  const getUser = async() => {
+  const getUser = async () => {
     try {
       const userRef = collection(db, 'users');
-      const q = query(
-        userRef,
-        where('email', '==', email)
-      );
+      const q = query(userRef, where('email', '==', email));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
@@ -173,7 +199,7 @@ export default function LoginScreen({ navigation }) {
       console.error('Error getting documents: ', error);
       // Xử lý lỗi ở đây nếu có
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -252,15 +278,23 @@ export default function LoginScreen({ navigation }) {
               </Text>
             ) : null}
 
-            <Pressable onPress={() => handleResetPassword()}>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => handleResetPassword()}
+            >
               <Text style={styles.forgotPassword}>Forgot password?</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable style={styles.button} onPress={() => handleRegister()}>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.button}
+              onPress={() => handleRegister()}
+            >
               <Text style={styles.buttonText}>Login Now</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={{ marginTop: 16 }}
               onPress={() => navigation.navigate('Register')}
             >
@@ -268,7 +302,7 @@ export default function LoginScreen({ navigation }) {
                 Do you have any account yet?
               </Text>
               <Text style={styles.createAccount}>Register Now</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

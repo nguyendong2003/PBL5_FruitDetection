@@ -7,7 +7,6 @@ import {
   TextInput,
   StatusBar,
   Image,
-  Pressable,
   Button,
   TouchableOpacity,
   Alert,
@@ -19,12 +18,22 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useState, useEffect } from 'react';
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, where, doc ,query, getDocs } from "firebase/firestore"; 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  where,
+  doc,
+  query,
+  getDocs,
+} from 'firebase/firestore';
 import { app } from '../firebaseConfig';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 export default function RegisterScreen({ navigation }) {
-  const auth = getAuth(app)
-  const db = getFirestore(app)
+  const auth = getAuth(app);
+  const db = getFirestore(app);
   const [email, setEmail] = useState('');
   const [fullname, setFullname] = useState('');
 
@@ -60,16 +69,17 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = () => {
     // console.log("ok")
     let newErrors = {};
-    const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+    const emailRegex = new RegExp(
+      /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
+      'gm'
+    );
     // Kiểm tra email
-    
 
     if (!email) {
       newErrors['emailError'] = 'Email cannot be empty';
     }
 
-    
-    if(email && !emailRegex.test(email)) {
+    if (email && !emailRegex.test(email)) {
       newErrors['emailInvalid'] = 'Email address not valid';
     }
 
@@ -82,7 +92,7 @@ export default function RegisterScreen({ navigation }) {
     if (!password) {
       newErrors['passwordEmptyError'] = 'Password cannot be empty';
     }
-    
+
     if (!confirmPassword) {
       newErrors['confirmPasswordEmptyError'] =
         'Confirm Password cannot be empty';
@@ -95,40 +105,41 @@ export default function RegisterScreen({ navigation }) {
     // console.log(newErrors);
     // Nếu có lỗi, hiển thị chúng
     if (Object.keys(newErrors).length > 0) {
-        
-        // console.log("fail")
+      // console.log("fail")
       setErrors(newErrors);
     } else {
-      
       setErrors({});
-        // console.log("oke")
+      // console.log("oke")
       // Nếu không có lỗi, xóa tất cả các lỗi hiện tại
       createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        addUser()
-        alert('Register successfully');
-        navigation.navigate('Login');
-      })
-      .catch((error) => {
-        if(error.code === "auth/weak-password") {
-          Alert.alert('Invalid credentials', "Password should be at least 6 characters")
-        }
-      });
+        .then((userCredential) => {
+          addUser();
+          alert('Register successfully');
+          navigation.navigate('Login');
+        })
+        .catch((error) => {
+          if (error.code === 'auth/weak-password') {
+            Alert.alert(
+              'Invalid credentials',
+              'Password should be at least 6 characters'
+            );
+          }
+        });
     }
-  }
+  };
 
-  const addUser = async() => {
-    const docRef = await addDoc(collection(db, "users"), {
+  const addUser = async () => {
+    const docRef = await addDoc(collection(db, 'users'), {
       email: email,
       fullname: fullname,
-      password: password
+      password: password,
     });
-    
+
     // console.log("Document written with ID: ", docRef.id);
-    await updateDoc(doc(db, "users", docRef.id), {
-      id: docRef.id
+    await updateDoc(doc(db, 'users', docRef.id), {
+      id: docRef.id,
     });
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -149,7 +160,6 @@ export default function RegisterScreen({ navigation }) {
           />
           <View style={styles.form}>
             <Text style={styles.textTitle}>Create an account</Text>
-
 
             <Text style={styles.labelForm}>Email address</Text>
             <TextInput
@@ -175,7 +185,6 @@ export default function RegisterScreen({ navigation }) {
             {errors['emailInvalid'] ? (
               <Text style={styles.errorText}>{errors['emailInvalid']}</Text>
             ) : null}
-
 
             <Text style={styles.labelForm}>Full name</Text>
             <TextInput
@@ -267,7 +276,8 @@ export default function RegisterScreen({ navigation }) {
               </Text>
             ) : null}
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={styles.button}
               onPress={() => {
                 // Keyboard.dismiss();
@@ -275,9 +285,10 @@ export default function RegisterScreen({ navigation }) {
               }}
             >
               <Text style={styles.buttonText}>Register Now</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.5}
               style={{ marginTop: 16 }}
               onPress={() => navigation.navigate('Login')}
             >
@@ -285,7 +296,7 @@ export default function RegisterScreen({ navigation }) {
                 Already have any account yet?
               </Text>
               <Text style={styles.createAccount}>Login Now</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

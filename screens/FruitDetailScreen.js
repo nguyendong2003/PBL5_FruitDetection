@@ -137,7 +137,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                 uri: fruit?.image,
               }}
               style={{ width: windowWidth, height: 300 }}
-              resizeMode='contain'
+              resizeMode="contain"
             />
             <Ionicons
               style={{ position: 'absolute', top: 10, left: 10 }}
