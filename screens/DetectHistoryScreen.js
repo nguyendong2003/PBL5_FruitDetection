@@ -14,6 +14,7 @@ import {
   Platform,
   Dimensions,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -199,16 +200,9 @@ export default function DetectHistoryScreen({ navigation }) {
             // keyExtractor={(item, index) => item?.id.toString()}
             ItemSeparatorComponent={<View style={{ height: 16 }}></View>}
             ListEmptyComponent={
-              <Text
-                style={{
-                  color: 'red',
-                  fontSize: 24,
-                  flex: 1,
-                  textAlign: 'center',
-                }}
-              >
-                No items found
-              </Text>
+              <View>
+                <ActivityIndicator size="large" color="#0000ff" />
+              </View>
             } // display when empty data
             ListHeaderComponent={<View style={{ height: 4 }}></View>}
             ListFooterComponent={<View style={{ height: 4 }}></View>}

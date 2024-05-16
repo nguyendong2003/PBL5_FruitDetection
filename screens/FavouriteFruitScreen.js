@@ -14,6 +14,7 @@ import {
   Platform,
   Dimensions,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -323,17 +324,9 @@ export default function FavouriteFruitScreen({ navigation }) {
             keyExtractor={(item, index) => item.id_fruit.toString()}
             ItemSeparatorComponent={<View style={{ height: 4 }}></View>}
             ListEmptyComponent={
-              <Text
-                style={{
-                  color: 'red',
-                  fontSize: 24,
-                  flex: 1,
-                  width: '100%',
-                  textAlign: 'center',
-                }}
-              >
-                No fruits found
-              </Text>
+              <View>
+                <ActivityIndicator size="large" color="#0000ff" />
+              </View>
             } // display when empty data
             ListHeaderComponent={<View style={{ height: 4 }}></View>}
             // ListFooterComponent={<View style={{ height: 4 }}></View>}
