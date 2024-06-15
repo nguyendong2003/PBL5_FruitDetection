@@ -106,6 +106,7 @@ export default function PersonalInformationScreen({ navigation }) {
     if (!result.canceled) {
       setPickerImage(result.assets[0].uri);
       setImage(result.assets[0].uri);
+      await uploadMedia(result.assets[0].uri);
     }
   };
 
@@ -153,8 +154,8 @@ export default function PersonalInformationScreen({ navigation }) {
   const windowHeight = window.height;
 
   const storage = getStorage();
-  const [upLoading, setUpLoading] = useState(false);
-  const uploadMedia = async () => {
+  const uploadMedia = async (pickerImage) => {
+    setIsLoading(true);
     if (pickerImage) {
       try {
         const { uri } = await FileSystem.getInfoAsync(pickerImage);
@@ -184,9 +185,9 @@ export default function PersonalInformationScreen({ navigation }) {
         await updateDoc(doc(db, 'users', currentUser.id), {
           image: imageUrl,
         });
+        setIsLoading(false);
       } catch (error) {
-        console.log(error);
-        setUpLoading(false);
+        setIsLoading(false);
       }
     }
   };
@@ -194,7 +195,7 @@ export default function PersonalInformationScreen({ navigation }) {
   const handleUpdateProfile = async () => {
     setIsLoading(true);
     // setGenderOfUpdatedUser()
-    await uploadMedia();
+    // await uploadMedia();
     // console.log(updatedUser)
     await updateProfile();
 
@@ -268,7 +269,7 @@ export default function PersonalInformationScreen({ navigation }) {
               }}
             >
               <View>
-                {image ? (
+                {pickerImage ? (
                   <Image
                     source={{ uri: pickerImage }}
                     style={{

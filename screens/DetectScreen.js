@@ -116,7 +116,7 @@ export default function DetectScreen({ navigation, route }) {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
   const [type, setType] = useState(CameraType.back);
-
+  const [infoFruit, setInfoFruit] = useState([])
   // console.log(type)
   function toggleCameraType() {
     setType((current) =>
@@ -182,6 +182,7 @@ export default function DetectScreen({ navigation, route }) {
             .then((res) => res.json())
             .then((data) => {
               if (!Object.prototype.hasOwnProperty.call(data, 'failed')) {
+                setInfoFruit(data.fruits);
                 setImageOutput(data.image);
                 // console.log((new Date(Date.now())).toLocaleDateString())
                 //uploadImageBase64(image.assets[0].mimeType,uri.substring(uri.lastIndexOf('/') + 1), data.image)
@@ -258,6 +259,7 @@ export default function DetectScreen({ navigation, route }) {
           .then((data) => {
             // console.log(data)
             if (!Object.prototype.hasOwnProperty.call(data, 'failed')) {
+              setInfoFruit(data.fruits);
               setImageOutput(data.image);
               uploadToFirebase(photo.uri, data.image);
               setIsLoading(false);
@@ -459,6 +461,22 @@ export default function DetectScreen({ navigation, route }) {
             >
               Result Detection:{' '}
             </Text>
+            {Object.entries(infoFruit).map(
+                    ([fruit, count], index) => {
+                      return (
+                        <Text 
+                          key={index}
+                          style={{
+                            fontSize: 16,
+                            fontWeight: '500',
+                            marginBottom: 15,
+                          }}
+                        >
+                          {fruit}: {count}
+                        </Text>
+                      );
+                    },
+            )}
             {imageOutput && (
               <Image
                 // source={{ uri: image }}

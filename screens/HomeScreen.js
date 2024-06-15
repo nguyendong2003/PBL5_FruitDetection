@@ -109,7 +109,7 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Reset state when screen gets focused again
-      setSearch('');
+      setSearch('');  
     });
 
     return unsubscribe;
@@ -192,14 +192,17 @@ export default function HomeScreen({ navigation }) {
                 )}
               </TouchableOpacity>
 
-              <View
+              
+            </View>
+          </View>
+          <View
                 style={{
                   position: 'absolute',
                   display: isAvatarFocus ? 'flex' : 'none',
-                  top: 60,
+                  top: 80,
+                  right: 16,
                   width: 220,
                   zIndex: 3,
-
                   backgroundColor: 'white',
                   borderRadius: 10,
                   shadowColor: 'black',
@@ -260,9 +263,6 @@ export default function HomeScreen({ navigation }) {
                   </Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
-
           <View style={[styles.searchContainer]}>
             <FontAwesome name="search" size={24} color="#3C3C43" />
             <TextInput
@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
   },
   //
   inputSearch: {
+    zIndex: 1,
     marginLeft: 8,
     fontSize: 22,
     width: '90%',

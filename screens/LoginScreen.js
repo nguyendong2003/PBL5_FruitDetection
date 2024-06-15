@@ -256,9 +256,9 @@ export default function LoginScreen({ navigation }) {
               <Text style={styles.forgotPassword}>Forgot password?</Text>
             </Pressable>
 
-            <Pressable style={styles.button} onPress={() => handleRegister()}>
+            <TouchableOpacity style={styles.button} onPress={() => handleRegister()}>
               <Text style={styles.buttonText}>Login Now</Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <Pressable
               style={{ marginTop: 16 }}

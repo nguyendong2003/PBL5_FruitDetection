@@ -209,7 +209,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                     fontSize: 16,
                     color: 'black',
                     fontWeight: '600',
-                    textAlign: 'justify',
+                    
                   }}
                 >
                   {fruit?.origin}
@@ -238,7 +238,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                     fontSize: 16,
                     color: 'black',
                     fontWeight: '600',
-                    textAlign: 'justify',
+                    
                   }}
                 >
                   {fruit?.nutrition}
@@ -267,7 +267,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                     fontSize: 16,
                     color: 'black',
                     fontWeight: '600',
-                    textAlign: 'justify',
+                    
                   }}
                 >
                   {fruit?.benefit}
@@ -296,7 +296,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                     fontSize: 16,
                     color: 'black',
                     fontWeight: '600',
-                    textAlign: 'justify',
+                    
                   }}
                 >
                   {fruit?.processing}
@@ -325,7 +325,7 @@ export default function FruitDetailScreen({ navigation, route }) {
                     fontSize: 16,
                     color: 'black',
                     fontWeight: '600',
-                    textAlign: 'justify',
+                    
                   }}
                 >
                   {fruit?.description}

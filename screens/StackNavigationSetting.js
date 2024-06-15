@@ -90,7 +90,7 @@ export default function StackNavigationSetting({ navigation }) {
               name="chevron-back-circle-sharp"
               size={48}
               color="white"
-              onPress={() => navigation.navigate('Setting')}
+              onPress={() => navigation.navigate('DetectHistory')}
             />
           ),
         }}
